@@ -1,0 +1,19 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+{% include "pages/modals/nuevaClase.html" %}
+<link rel="stylesheet" href="{% static 'css/selectorColor.css' %}">
+<script src="{% static 'javascripts/selectorColor.js' %}"></script>
+<h1>Inicio</h1>
+<button data-bs-toggle="modal" data-bs-target="#nuevaClase"><span class="material-symbols-outlined">
+        add
+    </span></button>
+
+<div class="color-selector">
+    <div class="color-option" data-color="blue"></div>
+    <div class="color-option" data-color="green"></div>
+    <div class="color-option" data-color="pink"></div>
+    <!-- Agrega más opciones de colores aquí -->
+</div>
+
+{% endblock %}

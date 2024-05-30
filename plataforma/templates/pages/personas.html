@@ -1,0 +1,28 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/personas.css' %}">
+{% include "layouts/claseBase.html" %}
+<div class="container">
+    <header>
+        <h1>COMPAÑEROS</h1>
+    </header>
+    <section class="profesor">
+        <h2>Profesor</h2>
+        <hr>
+        <p>Jose Luis Herrera Gallardo</p>
+    </section>
+    <section class="alumnos">
+        <h2>Alumnos</h2>
+        <hr>
+        <ul>
+            <li>Juan Mateo Hernandez De Luna</li>
+            <li>Cristian Andres Cid Rodriguez</li>
+            <li>Ezequiel Cruz Paz</li>
+            <li>Angel Perez Perez</li>
+            <li>Brian Emanuel Flores Hernandez</li>
+            <li>Benjamin Peña Marin</li>
+        </ul>
+    </section>
+</div>
+{% endblock %}

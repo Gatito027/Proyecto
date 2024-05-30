@@ -1,0 +1,15 @@
+.titulo{
+    font-size: 25px;
+    font-weight: bold;
+    color: black;
+}
+.autor{
+    font-size: 20px;
+    color: gray;
+}
+.articulo{
+    text-decoration: none;
+}
+.articulo:hover{
+    background-color: rgb(246, 246, 246);
+}

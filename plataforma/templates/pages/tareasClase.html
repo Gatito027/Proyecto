@@ -1,0 +1,45 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/tareas.css' %}">
+<script src="{% static 'javascripts/tareasclase.js' %}"></script>
+{% include "layouts/claseBase.html" %}
+{% include "pages/modals/modalTema.html" %}
+{% include "pages/modals/crearTarea.html" %}
+{% include "pages/modals/crearMaterial.html" %}
+<h1 id="titleAzul">Tareas y materiales</h1>
+<div class="boton-desplegable">
+    <button id="botonAzul" onclick="toggleOpciones()"><span class="material-symbols-outlined">
+        add
+        </span> Nueva</button>
+    <div id="opciones" class="opciones-ocultas mt-2">
+        <button id="botonAzul" data-bs-toggle="modal" data-bs-target="#crearTarea"><span class="material-symbols-outlined">
+            task_alt
+        </span> Tarea</button>
+        <button id="botonAzul" data-bs-toggle="modal" data-bs-target="#crearMaterial2"><span class="material-symbols-outlined">
+            menu_book
+            </span> Material</button>
+        <button id="botonAzul" data-bs-toggle="modal" data-bs-target="#myModal"><span class="material-symbols-outlined">
+            lists
+            </span> Tema</button>
+    </div>
+</div>
+<h2 id="temaAzul">Tema 1: Conceptos basicos</h2>
+<a class="navegacion" href="{% url 'ViAlTareas' %}">
+    <div id="icon"><span class="material-symbols-outlined">
+            task_alt
+        </span></div>
+    <p id="titulos2">Principios basicos</p>
+    <p id="fecha">Se entrega el: 20/05/24</p>
+</a>
+<a class="navegacion" href="{% url 'ViAlMateriales' %}">
+    <div id="icon">
+        <span class="material-symbols-outlined">
+            menu_book
+            </span>
+    </div>
+    <p id="titulos2">Principios basicos</p>
+    <p id="fecha">Publicado el: 20/05/24</p>
+</a>
+<h2 id="temaAzul">Tema 2: Conceptos avanzados</h2>
+{% endblock %}

@@ -1,0 +1,30 @@
+.color-selector {
+    display: flex;
+}
+
+.color-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.color-option[data-color="blue"] {
+    background-color: blue;
+}
+
+.color-option[data-color="green"] {
+    background-color: green;
+}
+
+.color-option[data-color="pink"] {
+    background-color: pink;
+}
+
+/* Agrega estilos para más colores aquí */
+
+.color-option.selected {
+    border: 2px solid #000;
+    /* Cambia el color del borde si es necesario */
+}

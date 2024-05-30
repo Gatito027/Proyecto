@@ -1,0 +1,16 @@
+.titulo{
+    font-size: 50px;
+    color: black;
+}
+.autor{
+    font-size: 20px;
+    color: gray;
+}
+.fecha{
+    font-size: 20px;
+    color: gray;
+}
+.contenido{
+    font-size: 20px;
+    color: black;
+}

@@ -1,0 +1,65 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/configclase.css' %}">
+{% include "layouts/claseBase.html" %}
+{% include "pages/modals/confirmardropClase.html" %}
+<div id="card" class="mt-2">
+    
+    <h1 id="titulo">Detalles</h1>
+    <form action=""></form>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Nombre de la clase</span>
+        <input type="text" class="form-control">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Descripción de la clase</span>
+        <input type="text" class="form-control">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Proyecto</span>
+        <input type="text" class="form-control">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Materia</span>
+        <input type="text" class="form-control">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Color distintivo</span>
+        <input type="text" class="form-control">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Ciclo escolar</span>
+        <input type="text" class="form-control">
+    </div>
+        <button id="boton">Guardar</button>
+    </form>
+</div>
+<div id="card" class="mt-2">
+    <h1 id="titulo">General</h1>
+    <form action="">
+        <div class="input-group mb-3">
+            <span class="input-group-text">Enlace de la clase</span>
+            <span class="input-group-text">clase.com/badfbjsdgbjdfg</span>
+            <button id="boton"><span class="material-symbols-outlined">
+                content_copy
+                </span></button>
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text">Codigo de la clase</span>
+            <span class="input-group-text">badfbjsdgbjdfg</span>
+            <button id="boton"><span class="material-symbols-outlined">
+                content_copy
+                </span></button>
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text">Enlace de zoom</span>
+            <input type="text" class="form-control">
+        </div>
+    </form>
+        <button id="botonDelete" data-bs-toggle="modal" data-bs-target="#eliminarClase">Borrar clase</button>
+        <button id="boton">Guardar</button>
+        <button id="botonArchivar">Archivar clase</button>
+    
+</div>
+{% endblock %}

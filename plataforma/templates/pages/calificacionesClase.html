@@ -1,0 +1,25 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+{% include "layouts/claseBase.html" %}
+<link rel="stylesheet" href="{% static 'css/calificacionesclase.css' %}">
+<div>
+    <h1 id="titulo">Calificaciones del grupo</h1>
+</div>
+<div class="container mt-3">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Principios basicos</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>John</td>
+                <td>__/100</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

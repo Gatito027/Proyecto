@@ -1,0 +1,52 @@
+#titleAzul{
+    background-color: #36A0ED;
+    color: white;
+    text-align: center;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+#botonAzul{
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    background-color: #36A0ED;
+    padding: 5px 15px 5px 15px;
+    border: 0px;
+}
+#botonAzul:hover{
+    background-color: #077fd5;
+}
+#temaAzul{
+    color: #077fd5;
+    font-weight: bold;
+    font-size: 30px;
+}
+#icon{
+    background-color: #36A0ED;
+    width: 35px;
+    height: 15%;
+    border-radius: 25px;
+    color: white;
+    padding-top: 3px;
+    padding-left: 5px;
+}
+#titulos2{
+    font-weight: bold;
+    font-size: 20px;
+    color: black;
+}
+#fecha{
+    font-weight: bold;
+    font-size: 15px;
+    color: gray;
+}
+.opciones-ocultas {
+    display: none;
+}
+.opciones-visibles {
+    display: block;
+}
+.navegacion{
+    text-decoration: none;
+}

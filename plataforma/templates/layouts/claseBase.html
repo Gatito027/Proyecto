@@ -1,0 +1,21 @@
+<div>
+    <ul class="nav nav-tabs justify-content-center">
+        <li class="nav-item">
+            <a class="nav-link {% if enlace_activo == 'tablon' %}active{% endif %}" href="{% url 'clase' %}">Tablón</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if enlace_activo == 'personas' %}active{% endif %}" href="{% url 'personas' %}">Personas</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if enlace_activo == 'tareas' %}active{% endif %}" href="{% url 'tareas_clase' %}">Tareas y materiales</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if enlace_activo == 'calificaciones' %}active{% endif %}" href="{% url 'calificaciones' %}">Calificaciones</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if enlace_activo == 'configurar' %}active{% endif %}" href="{% url 'configurar_clase' %}"><span class="material-symbols-outlined">
+                    settings
+                </span></a>
+        </li>
+    </ul>
+</div>

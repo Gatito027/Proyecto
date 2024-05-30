@@ -1,0 +1,70 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/clase.css' %}">
+{% include "layouts/claseBase.html" %}
+<div class="titulo">
+    <h1>Metodología de la investigación</h1>
+</div>
+<div class="row">
+    <div class="col-sm-3">
+        <div class="mt-2 tarjeta">
+            <p class="titulo-2"">Unirse a la conferencia</p>
+            <button class="boton_unirse" onclick="location.href='https://zoom.us/es/join'">Entrar</button>
+        </div>
+        <div class="mt-2 tarjeta">
+            <p class="titulo-2">Tareas pendientes</p>
+            <a href="{% url 'ViAlTareas' %}" id="flex">
+                <div class="icono"><span class="material-symbols-outlined">
+                        task_alt
+                    </span></div>
+                <div id="flexcol">
+                    <div id="subtexto1">Principios basicos</div>
+                    <div id="fecha">22/05/24</div>
+                </div>
+            </a>
+            <p class="btn btn-outline-primary mt-3" onclick=location.href={% url 'tareas_clase' %}>Mostrar más</p>
+        </div>
+    </div>
+    <div class="col mt-2">
+        <div>
+            <form action="">
+                <div class="input-group mb-3 input-group-lg">
+                    <input type="text" class="form-control px-2" placeholder="Publica algo...">
+                    <button id="boton_enviar"><svg xmlns="http://www.w3.org/2000/svg" height="40px"
+                            viewBox="0 -960 960 960" width="40px" fill="#FFFFFF">
+                            <path
+                                d="M120-160v-640l760 320-760 320Zm60-93 544-227-544-230v168l242 62-242 60v167Zm0 0v-457 457Z" />
+                        </svg></button>
+                </div>
+            </form>
+        </div>
+        <div class="mt-2 tarjeta">
+            <div id="flex">
+                <div class="icono"><span class="material-symbols-outlined">
+                        task_alt
+                    </span></div>
+                <div id="flexcol">
+                    <div class="titulo-2">Autor</div>
+                    <div id="fecha">22/05/24</div>
+                </div>
+            </div>
+            <p id="texto">In minim non adipisicing aute irure enim fugiat cupidatat qui magna do pariatur.</p>
+            <div>
+                <form action="">
+                    <div class="input-group mb-3 input-group-lg">
+                        <input type="text" class="form-control px-2" placeholder="Comenta...">
+                        <button id="boton_enviar"><svg xmlns="http://www.w3.org/2000/svg" height="40px"
+                                viewBox="0 -960 960 960" width="40px" fill="#FFFFFF">
+                                <path
+                                    d="M120-160v-640l760 320-760 320Zm60-93 544-227-544-230v168l242 62-242 60v167Zm0 0v-457 457Z" />
+                            </svg></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}
