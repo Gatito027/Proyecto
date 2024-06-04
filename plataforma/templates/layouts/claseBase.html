@@ -1,16 +1,19 @@
 <div>
     <ul class="nav nav-tabs justify-content-center">
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo == 'tablon' %}active{% endif %}" href="{% url 'clase' %}">Tablón</a>
+            <a class="nav-link {% if enlace_activo == 'coil' %}active{% endif %}" href="{% url 'introduccion' %}">Introducción</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if enlace_activo == 'tablon' %}active{% endif %}" href="{% url 'clase' %}">Foro</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if enlace_activo == 'personas' %}active{% endif %}" href="{% url 'personas' %}">Personas</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo == 'tareas' %}active{% endif %}" href="{% url 'tareas_clase' %}">Tareas y materiales</a>
+            <a class="nav-link {% if enlace_activo == 'tareas' %}active{% endif %}" href="{% url 'tareas_clase' %}">Actividades</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo == 'calificaciones' %}active{% endif %}" href="{% url 'calificaciones' %}">Calificaciones</a>
+            <a class="nav-link {% if enlace_activo == 'calificaciones' %}active{% endif %}" href="{% url 'calificaciones' %}">Progreso</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if enlace_activo == 'configurar' %}active{% endif %}" href="{% url 'configurar_clase' %}"><span class="material-symbols-outlined">

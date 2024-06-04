@@ -14,6 +14,7 @@ urlpatterns = [
     path('tareasClase/', views.tareas_clase,name="tareas_clase"),
     path('configrarClase/', views.configurar_clase, name="configurar_clase"),
     path('calificacionesClase/',views.calificaciones_clase, name="calificaciones"),
+    path('introduccion/',views.introduccion_clase,name='introduccion'),
     path('articulos/',views.articulos,name="articulos"),
     path('articulo/',views.arcticulo,name="articulo"),
     path('ViAlTareas/',views.ViAlTareas,name="ViAlTareas"),

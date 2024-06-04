@@ -19,6 +19,9 @@ def InterfazAlumno(request):
 def personas (request): 
     return render(request , 'pages/personas.html',{'enlace_activo': 'personas'})
 
+def introduccion_clase(request):
+    return render(request,'pages/introduccionCoil.html',{'enlace_activo': 'coil'})
+
 def clase(request):
     return render(request,'pages/clase.html',{'enlace_activo': 'tablon'})
 

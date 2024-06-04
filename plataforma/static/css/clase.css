@@ -37,30 +37,30 @@
     color: white;
     padding-top: 3px;
 }
-#flex{
+.correguir{
     display: flex;
     text-decoration: none;
 }
-#flexcol{
+.columna{
     display: flex;
     flex-direction: column;
 }
-#subtexto1{
+.subtexto-1{
     font-weight: bold;
     font-size: 15px;
     padding-left: 20px;
     color: black;
 }
-#subtexto2{
+.subtexto-2{
     font-weight: bold;
     font-size: 15px;
 }
-#fecha{
+.fecha{
     font-weight: bold;
     font-size: 15px;
     color: gray;
 }
-#boton_enviar{
+.boton_enviar{
     background-color: #36A0ED;
     color: white;
     border: 0px;
@@ -68,9 +68,9 @@
     font-size: 20px;
     width: 50px;
 }
-#boton_enviar:hover{
+.boton_enviar:hover{
     background-color: #077fd5;
 }
-#texto{
+.texto{
     font-size: 25px;
 }
