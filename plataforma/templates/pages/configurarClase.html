@@ -4,9 +4,9 @@
 <link rel="stylesheet" href="{% static 'css/configclase.css' %}">
 {% include "layouts/claseBase.html" %}
 {% include "pages/modals/confirmardropClase.html" %}
-<div id="card" class="mt-2">
+<div class="mt-2 tarjeta">
     
-    <h1 id="titulo">Detalles</h1>
+    <h1 class="titulo-1">Detalles</h1>
     <form action=""></form>
     <div class="input-group mb-3">
         <span class="input-group-text">Nombre del proyecto</span>
@@ -28,23 +28,23 @@
         <span class="input-group-text">Ciclo escolar</span>
         <input type="text" class="form-control">
     </div>
-        <button id="boton">Guardar</button>
+        <button class="boton">Guardar</button>
     </form>
 </div>
-<div id="card" class="mt-2">
-    <h1 id="titulo">General</h1>
+<div class="mt-2 tarjeta">
+    <h1 class="titulo-1">General</h1>
     <form action="">
         <div class="input-group mb-3">
             <span class="input-group-text">Enlace del proyecto</span>
             <span class="input-group-text">clase.com/badfbjsdgbjdfg</span>
-            <button id="boton"><span class="material-symbols-outlined">
+            <button class="boton"><span class="material-symbols-outlined">
                 content_copy
                 </span></button>
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text">Codigo del proyecto</span>
             <span class="input-group-text">badfbjsdgbjdfg</span>
-            <button id="boton"><span class="material-symbols-outlined">
+            <button class="boton"><span class="material-symbols-outlined">
                 content_copy
                 </span></button>
         </div>
@@ -53,9 +53,9 @@
             <input type="text" class="form-control">
         </div>
     </form>
-        <button id="botonDelete" data-bs-toggle="modal" data-bs-target="#eliminarClase">Borrar clase</button>
-        <button id="boton">Guardar</button>
-        <button id="botonArchivar">Archivar clase</button>
+        <button class="botonDelete" data-bs-toggle="modal" data-bs-target="#eliminarClase">Borrar proyecto</button>
+        <button class="boton">Guardar</button>
+        <button class="botonArchivar">Archivar proyecto</button>
     
 </div>
 {% endblock %}

@@ -1,11 +1,11 @@
-#titleAzul{
+.titulo{
     background-color: #36A0ED;
     color: white;
     text-align: center;
     padding-top: 30px;
     padding-bottom: 30px;
 }
-#botonAzul{
+.boton{
     text-decoration: none;
     font-size: 20px;
     font-weight: bold;
@@ -14,15 +14,15 @@
     padding: 5px 15px 5px 15px;
     border: 0px;
 }
-#botonAzul:hover{
+.boton:hover{
     background-color: #077fd5;
 }
-#temaAzul{
+.tema{
     color: #077fd5;
     font-weight: bold;
     font-size: 30px;
 }
-#icon{
+.icono{
     background-color: #36A0ED;
     width: 35px;
     height: 15%;
@@ -33,12 +33,12 @@
     padding-top: 5px;
     padding-bottom: 5px;
 }
-#titulos2{
+.titulo-2{
     font-weight: bold;
     font-size: 20px;
     color: black;
 }
-#fecha{
+.fecha{
     font-weight: bold;
     font-size: 15px;
     color: gray;

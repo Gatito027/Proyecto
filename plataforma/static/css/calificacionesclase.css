@@ -1,7 +1,12 @@
-#titulo{
+.titulo{
     background-color: #36A0ED;
     color: white;
     text-align: center;
     padding-top: 30px;
     padding-bottom: 30px;
+}
+.tema{
+    color: #077fd5;
+    font-weight: bold;
+    font-size: 30px;
 }

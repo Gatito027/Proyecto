@@ -1,0 +1,30 @@
+.titulo{
+    background-color: purple;
+}
+.boton_unirse{
+    background-color: purple;
+}
+.boton_unirse:hover{
+    background-color: rgb(75, 1, 75);
+}
+.icono{
+    background-color: purple;
+}
+.boton_enviar{
+    background-color: purple;
+}
+.boton_enviar:hover{
+    background-color: rgb(75, 1, 75);
+}
+.boton{
+    background-color: purple;
+}
+.boton:hover{
+    background-color: rgb(75, 1, 75);
+}
+.tema{
+    color: purple;
+}
+.nav-link{
+    color: purple;
+}

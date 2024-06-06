@@ -1,8 +1,8 @@
-#titulo{
+.titulo-1{
     font-size: 30;
     font-weight: bold;
 }
-#card{
+.tarjeta{
     width: 100%;
     padding-top: 10px;
     padding-left: 10px;
@@ -11,7 +11,7 @@
     background-color: rgb(240, 240, 240);
     text-align: center;
 }
-#boton{
+.boton{
     font-size: 20px;
     font-weight: bold;
     color: white;
@@ -19,10 +19,10 @@
     padding: 5px 15px 5px 15px;
     border: 0px;
 }
-#boton:hover{
+.boton:hover{
     background-color: #077fd5;
 }
-#botonDelete{
+.botonDelete{
     font-size: 20px;
     font-weight: bold;
     color: white;
@@ -30,10 +30,10 @@
     padding: 5px 15px 5px 15px;
     border: 0px;
 }
-#botonDelete:hover{
+.botonDelete:hover{
     background-color: #a40f0f;
 }
-#botonArchivar{
+.botonArchivar{
     font-size: 20px;
     font-weight: bold;
     color: white;
@@ -41,6 +41,6 @@
     padding: 5px 15px 5px 15px;
     border: 0px;
 }
-#botonArchivar:hover{
+.botonArchivar:hover{
     background-color: rgb(74, 74, 74);
 }
