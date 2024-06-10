@@ -8,12 +8,12 @@ class Catalogo(models.Model):
 class Usuarios_general(models.Model):
     nombre = models.CharField(max_length=50)
     apellidos = models.CharField(max_length=30)
-    matricula = models.IntegerField
+    matricula = models.IntegerField()
     correo_electronico = models.CharField(max_length=35)
     sexo = models.CharField(max_length=15)
     nombre_usuario = models.CharField(max_length=50)
     Contrasena = models.CharField(max_length=250)
-    rol_usuario = models.IntegerField
+    rol_usuario = models.IntegerField()
     id_catalogo = models.ForeignKey(Catalogo, on_delete=models.CASCADE)
 
 class Proyectos(models.Model):
@@ -26,8 +26,79 @@ class Proyectos(models.Model):
     ciclo_escolar = models.CharField(max_length=15)
     achivo_proyecto = models.BooleanField(default=False)
     color = models.CharField(max_length=10)
+    enlace_reunion = models.TextField
     id_profesor = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
 
+class Anuncios(models.Model):
+    Comentario = models.TextField()
+    fecha = models.DateField()
+    fecha_edit = models.DateField()
+    id_usuario = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
+    id_proyecto = models.ForeignKey(Proyectos, on_delete=models.CASCADE)
+
+class Anuncios_archivos(models.Model):
+    path = models.TextField()
+    fecha = models.DateField()
+    id_anuncio= models.ForeignKey(Anuncios,on_delete=models.CASCADE)
+
+class Anuncios_comentarios(models.Model):
+    Comentario = models.TextField()
+    fecha = models.DateField()
+    fecha_edit = models.DateField()
+    id_usuario = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
+    id_anuncio= models.ForeignKey(Anuncios,on_delete=models.CASCADE)
+
+class Materiales(models.Model):
+    Comentario = models.TextField()
+    fecha = models.DateField()
+    fecha_edit = models.DateField()
+    id_usuario = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
+    id_proyecto = models.ForeignKey(Proyectos, on_delete=models.CASCADE)
+
+class Materiales_archivos(models.Model):
+    path = models.TextField()
+    fecha = models.DateField()
+    id_material= models.ForeignKey(Materiales,on_delete=models.CASCADE)
+
+class Materiales_comentarios(models.Model):
+    Comentario = models.TextField()
+    fecha = models.DateField()
+    fecha_edit = models.DateField()
+    privado = models.BooleanField()
+    id_usuario = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
+    id_materiales= models.ForeignKey(Materiales,on_delete=models.CASCADE)
+
+class Tareas(models.Model):
+    Comentario = models.TextField()
+    fecha = models.DateField()
+    fecha_edit = models.DateField()
+    id_usuario = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
+    id_proyecto = models.ForeignKey(Proyectos, on_delete=models.CASCADE)
+
+class Tareas_archivos(models.Model):
+    path = models.TextField()
+    fecha = models.DateField()
+    id_tarea= models.ForeignKey(Tareas,on_delete=models.CASCADE)
+
+class Tareas_comentarios(models.Model):
+    Comentario = models.TextField()
+    fecha = models.DateField()
+    fecha_edit = models.DateField()
+    privado = models.BooleanField()
+    id_usuario = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
+    id_tarea= models.ForeignKey(Tareas,on_delete=models.CASCADE)
+
+class Entregas(models.Model):
+    fecha_entrega = models.DateField()
+    avance = models.CharField(max_length=250)
+    entregado = models.BooleanField()
+    id_alumno = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
+    id_tarea= models.ForeignKey(Tareas,on_delete=models.CASCADE)
+
+class Entregas_archivos(models.Model):
+    path = models.TextField()
+    fecha = models.DateField()
+    id_entrega= models.ForeignKey(Entregas,on_delete=models.CASCADE)
 class Presentacion_profesor(models.Model):
     estudios = models.CharField(max_length=250)
     descripcion = models.TextField()
@@ -42,5 +113,3 @@ class Alumnos_proyecto(models.Model):
     fecha_ingreso = models.DateField()
     id_alumno = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
     id_proyecto = models.ForeignKey(Proyectos, on_delete=models.CASCADE)
-
-

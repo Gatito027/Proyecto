@@ -14,7 +14,7 @@ def registroFinal (request):
     return render(request , 'pages/registro/registroFinal.html')
 
 
-def ListaProyectos(request):
+def ListaProyectos(request,usuario):
     return render(request,'pages/proyectos/ListaProyectos.html')
 
 def IntroduccionCoil(request):
