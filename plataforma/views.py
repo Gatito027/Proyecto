@@ -2,55 +2,52 @@ from django.shortcuts import redirect, render
 
 # Create your views here.
 def index(request):
-    return redirect('login')
+    return redirect('Login')
 
 def login(request): 
-    return render(request , 'pages/login.html')
+    return render(request , 'pages/login/login.html')
 
-def registrate (request): 
-    return render(request , 'pages/registro.html')
+def registro (request): 
+    return render(request , 'pages/registro/registro.html')
 
-def registrateFinal (request): 
-    return render(request , 'pages/RegistroFinal.html')
+def registroFinal (request): 
+    return render(request , 'pages/registro/registroFinal.html')
 
-def InterfazAlumno(request):
-    return render(request,'pages/InterfazAlumno.html')
 
-def personas (request): 
-    return render(request , 'pages/personas.html',{'enlace_activo': 'personas'})
+def ListaProyectos(request):
+    return render(request,'pages/proyectos/ListaProyectos.html')
 
-def introduccion_clase(request):
-    return render(request,'pages/introduccionCoil.html',{'enlace_activo': 'coil'})
+def IntroduccionCoil(request):
+    return render(request,'pages/Proyectos/IntroduccionCoil.html',{'enlace_activo': 'coil'})
 
-def clase(request):
-    return render(request,'pages/clase.html',{'enlace_activo': 'tablon'})
+def ListaAlumnosProfesores (request): 
+    return render(request , 'pages/Proyectos/ListaAlumnosProfesores.html',{'enlace_activo': 'personas'})
 
-def tareas_clase(request):
-    return render(request,'pages/tareasClase.html',{'enlace_activo': 'tareas'})
 
-def configurar_clase(request):
-    return render(request,'pages/configurarClase.html',{'enlace_activo': 'configurar'})
+def ProyectoDetail(request):
+    return render(request,'pages/Proyectos/ProyectoDetail.html',{'enlace_activo': 'tablon'})
 
-def calificaciones_clase(request):
-    return render(request,'pages/calificacionesClase.html',{'enlace_activo': 'calificaciones'})
+def ListaActividadesPorFases(request):
+    return render(request,'pages/Actividades/ListaActividadesPorFases.html',{'enlace_activo': 'tareas'})
 
-def tareas_pendientes(request):
-    return render(request, 'pages/TareasPendientes.html')
+def ConfiguracionProyecto(request):
+    return render(request,'pages/Proyectos/ConfiguracionProyecto.html',{'enlace_activo': 'configurar'})
 
-def error_page(request):
-    return render(request,'pages/errorPage.html')
+def SeguimientoActividad(request):
+    return render(request,'pages/Actividades/SeguimientoActividad.html',{'enlace_activo': 'calificaciones'})
 
-def articulos(request):
-    return render(request,'pages/articulos.html')
+def ActividadesPendientes(request):
+    return render(request, 'pages/Actividades/ActividadesPendientes.html')
 
-def arcticulo(request):
-    return render(request,'pages/articulo.html')
 
-def ViAlTareas(request):
-    return render(request, 'pages/ViAlTareas.html')
+def ViAlActividades(request):
+    return render(request, 'pages/Actividades/ViAlActividades.html')
 
 def ViAlMateriales(request):
-    return render(request, 'pages/ViAlMateriales.html')
+    return render(request, 'pages/Materiales/ViAlMateriales.html')
 
-def CrearArticulo(request):
-    return render(request, 'pages/CrearArticulo.html')
+# def articulos(request):
+#     return render(request,'pages/articulos.html')
+
+# def arcticulo(request):
+#     return render(request,'pages/articulo.html')

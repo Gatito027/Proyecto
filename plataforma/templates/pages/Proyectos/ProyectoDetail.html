@@ -1,7 +1,7 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/clase.css' %}">
+<link rel="stylesheet" href="{% static 'css/Proyectos/ProyectoDetail.css' %}">
 {% include "layouts/claseBase.html" %}
 <div class="titulo">
     <h1>Proyecto titulo</h1>
@@ -9,12 +9,12 @@
 <div class="row">
     <div class="col-sm-3">
         <div class="mt-2 tarjeta">
-            <p class="titulo-2"">Unirse a la conferencia</p>
+            <p class="titulo-2">Unirse a la conferencia</p>
             <button class="boton_unirse" onclick="location.href='https://zoom.us/es/join'">Entrar</button>
         </div>
         <div class="mt-2 tarjeta">
             <p class="titulo-2">Actividades pendientes</p>
-            <a href="{% url 'ViAlTareas' %}" class="correguir">
+            <a href="{% url 'ViAlActividades' %}" class="correguir">
                 <div class="icono"><span class="material-symbols-outlined">
                         task_alt
                     </span></div>
@@ -23,7 +23,7 @@
                     <div class="fecha">22/05/24</div>
                 </div>
             </a>
-            <p class="btn btn-outline-primary mt-3" onclick=location.href={% url 'tareas_clase' %}>Mostrar más</p>
+            <p class="btn btn-outline-primary mt-3" onclick=location.href={% url 'ListaActividadesPorFases' %}>Mostrar más</p>
         </div>
     </div>
     <div class="col mt-2">

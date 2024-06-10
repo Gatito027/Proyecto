@@ -13,18 +13,18 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/Login/login.css' %}">
 
 </head>
 
 <body>
-    {% include "pages/modals/RecuperarPassword.html" %}
+    {% include "pages/Modals/RecuperarPassword.html" %}
 
     <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
         <div class="container-fluid">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'index' %}">Class</a>
+                    <a class="nav-link active" href="{% url 'Index' %}">Class</a>
                 </li>
             </ul>
         </div>
@@ -39,17 +39,17 @@
 
                             <div class="mb-md-5 mt-md-4 pb-5">
 
-                                <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
-                                <p class="text-white-50 mb-5">Por favor ingresa tu correo y contraseña!</p>
+                                <h2 class="fw-bold mb-2 text-uppercase">Iniciar Sesión</h2>
+                                <p class="text-white-50 mb-5">Por favor ingresa tu usuario y contraseña!</p>
 
                                 <div data-mdb-input-init class="form-outline form-white mb-4">
-                                    <input type="email" id="typeEmailX" class="form-control form-control-lg" required />
-                                    <label class="form-label" for="typeEmailX">Correo</label>
+                                    <input type="text" id="typeEmailX" class="form-control form-control-lg" placeholder="Ingresa tu usuario" required />
+                                    <label class="form-label" for="typeEmailX">Usuario</label>
                                 </div>
 
                                 <div data-mdb-input-init class="form-outline form-white mb-4">
                                     <input type="password" id="typePasswordX" class="form-control form-control-lg"
-                                        required />
+                                        required placeholder="Ingresa tu contraseña" />
                                     <label class="form-label" for="typePasswordX">Contraseña</label>
                                 </div>
 
@@ -61,7 +61,7 @@
                                     onclick="validateForm()">Entrar</button><br><br><br>
 
                                 <div>
-                                    <p class="mb-0">No tienes una cuenta? <a href="{% url 'registrate' %}"
+                                    <p class="mb-0">No tienes una cuenta? <a href="{% url 'Registro' %}"
                                             class="text-white-50 fw-bold">Registrate</a></p>
                                 </div>
 
@@ -80,7 +80,7 @@
     <script>
         function validateForm() {
             // Aquí puedes añadir validaciones personalizadas si lo deseas
-            window.location.href = "{% url 'InterfazAlumno' %}";
+            window.location.href = "{% url 'ListaProyectos' %}";
         }
     </script>
 </body>

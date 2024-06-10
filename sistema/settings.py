@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'sistema.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        "NAME": "tasksdb",
+        "NAME": "COIL",
         "USER": "postgres",
         "PASSWORD": "mimiau",
         "HOST": "localhost",
