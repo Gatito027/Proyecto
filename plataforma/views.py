@@ -1,4 +1,6 @@
+from django.db import connection
 from django.shortcuts import redirect, render
+from .models import *
 
 # Create your views here.
 def index(request):
@@ -14,8 +16,31 @@ def registroFinal (request):
     return render(request , 'pages/registro/registroFinal.html')
 
 
-def ListaProyectos(request,usuario):
-    return render(request,'pages/proyectos/ListaProyectos.html')
+def ListaProyectos(request, usuario):
+    with connection.cursor() as cursor:
+        cursor.callproc('BuscarRolByID', [usuario])
+        rol = cursor.fetchone()[0]
+
+        if rol == 1:
+            cursor.callproc('ListaProfesoresproyecto', [])
+            listaProfesores = cursor.fetchall()
+
+            cursor.callproc('BuscarProyectoImpartido', [usuario])
+            proyectos = cursor.fetchall()
+        elif rol == 2:
+            cursor.callproc('ListaProfesoresproyecto', [])
+            listaProfesores = cursor.fetchall()
+
+            cursor.callproc('BuscarProyectoImpartido', [usuario])
+            proyectos = cursor.fetchall()
+
+        else:
+            print("error")
+
+    return render(request, 'pages/proyectos/ListaProyectos.html', {
+        'rol': rol,
+        'listaProfesores': listaProfesores,
+        'proyectos': proyectos    })
 
 def IntroduccionCoil(request):
     return render(request,'pages/Proyectos/IntroduccionCoil.html',{'enlace_activo': 'coil'})
@@ -64,8 +89,11 @@ def Fase4(request):
 def Fase5(request):
     return render(request, 'pages/FasesCoil/fase5.html', {'enlace_activo': 'tareas','enlace_activo1': 'fase5'})
 
+
+
 # def articulos(request):
 #     return render(request,'pages/articulos.html')
 
 # def arcticulo(request):
 #     return render(request,'pages/articulo.html')
+
