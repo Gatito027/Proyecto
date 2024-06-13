@@ -16,6 +16,12 @@ urlpatterns = [
     path('ViAlActividades/',views.ViAlActividades,name="ViAlActividades"),
     path('ViAlMateriales/',views.ViAlMateriales,name="ViAlMateriales"),
     path('ActividadesPendientes/',views.ActividadesPendientes,name="ActividadesPendientes"),
+    path('FasesCoil/',views.indexFases,name="FasesCoil"),
+    path('Fase1/',views.Fase1,name="Fase1"),
+    path('Fase2/',views.Fase2,name="Fase2"),
+    path('Fase3/',views.Fase3,name="Fase3"),
+    path('Fase4/',views.Fase4,name="Fase4"),
+    path('Fase5/',views.Fase5,name="Fase5"),
     
     # path('articulos/',views.articulos,name="articulos"),
     # path('articulo/',views.arcticulo,name="articulo"),

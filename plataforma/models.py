@@ -12,14 +12,14 @@ class Usuarios_general(models.Model):
     correo_electronico = models.CharField(max_length=35)
     sexo = models.CharField(max_length=15)
     nombre_usuario = models.CharField(max_length=50)
-    Contrasena = models.CharField(max_length=250)
+    contrasena = models.CharField(max_length=250)
     rol_usuario = models.IntegerField()
     id_catalogo = models.ForeignKey(Catalogo, on_delete=models.CASCADE)
 
 class Proyectos(models.Model):
-    Nombre = models.CharField(max_length=100)
-    Materia = models.CharField(max_length=50)
-    Codigo = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=100)
+    materia = models.CharField(max_length=50)
+    codigo = models.CharField(max_length=100)
     descripcion = models.TextField()
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
@@ -30,7 +30,7 @@ class Proyectos(models.Model):
     id_profesor = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
 
 class Anuncios(models.Model):
-    Comentario = models.TextField()
+    comentario = models.TextField()
     fecha = models.DateField()
     fecha_edit = models.DateField()
     id_usuario = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
@@ -42,18 +42,24 @@ class Anuncios_archivos(models.Model):
     id_anuncio= models.ForeignKey(Anuncios,on_delete=models.CASCADE)
 
 class Anuncios_comentarios(models.Model):
-    Comentario = models.TextField()
+    comentario = models.TextField()
     fecha = models.DateField()
     fecha_edit = models.DateField()
     id_usuario = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
     id_anuncio= models.ForeignKey(Anuncios,on_delete=models.CASCADE)
 
+class Temas(models.Model):
+    titulo = models.CharField(max_length=50)
+    puntuacion = models.CharField(max_length=5)
+    id_proyecto = models.ForeignKey(Proyectos, on_delete=models.CASCADE)
+
 class Materiales(models.Model):
-    Comentario = models.TextField()
+    comentario = models.TextField()
     fecha = models.DateField()
     fecha_edit = models.DateField()
     id_usuario = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
     id_proyecto = models.ForeignKey(Proyectos, on_delete=models.CASCADE)
+    id_tema = models.ForeignKey(Temas, on_delete=models.CASCADE)
 
 class Materiales_archivos(models.Model):
     path = models.TextField()
@@ -61,7 +67,7 @@ class Materiales_archivos(models.Model):
     id_material= models.ForeignKey(Materiales,on_delete=models.CASCADE)
 
 class Materiales_comentarios(models.Model):
-    Comentario = models.TextField()
+    comentario = models.TextField()
     fecha = models.DateField()
     fecha_edit = models.DateField()
     privado = models.BooleanField()
@@ -69,11 +75,12 @@ class Materiales_comentarios(models.Model):
     id_materiales= models.ForeignKey(Materiales,on_delete=models.CASCADE)
 
 class Tareas(models.Model):
-    Comentario = models.TextField()
+    comentario = models.TextField()
     fecha = models.DateField()
     fecha_edit = models.DateField()
     id_usuario = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
     id_proyecto = models.ForeignKey(Proyectos, on_delete=models.CASCADE)
+    id_tema = models.ForeignKey(Temas, on_delete=models.CASCADE)
 
 class Tareas_archivos(models.Model):
     path = models.TextField()
@@ -81,7 +88,7 @@ class Tareas_archivos(models.Model):
     id_tarea= models.ForeignKey(Tareas,on_delete=models.CASCADE)
 
 class Tareas_comentarios(models.Model):
-    Comentario = models.TextField()
+    comentario = models.TextField()
     fecha = models.DateField()
     fecha_edit = models.DateField()
     privado = models.BooleanField()

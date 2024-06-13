@@ -46,6 +46,24 @@ def ViAlActividades(request):
 def ViAlMateriales(request):
     return render(request, 'pages/Materiales/ViAlMateriales.html')
 
+def indexFases(request):
+    return render(request, 'pages/FasesCoil/indexFases.html', {'enlace_activo': 'tareas','enlace_activo1': 'fases'})
+
+def Fase1(request):
+    return render(request, 'pages/FasesCoil/fase1.html', {'enlace_activo': 'tareas','enlace_activo1': 'fase1'})
+
+def Fase2(request):
+    return render(request, 'pages/FasesCoil/fase2.html', {'enlace_activo': 'tareas','enlace_activo1': 'fase2'})
+
+def Fase3(request):
+    return render(request, 'pages/FasesCoil/fase3.html', {'enlace_activo': 'tareas','enlace_activo1': 'fase3'})
+
+def Fase4(request):
+    return render(request, 'pages/FasesCoil/fase4.html', {'enlace_activo': 'tareas','enlace_activo1': 'fase4'})
+
+def Fase5(request):
+    return render(request, 'pages/FasesCoil/fase5.html', {'enlace_activo': 'tareas','enlace_activo1': 'fase5'})
+
 # def articulos(request):
 #     return render(request,'pages/articulos.html')
 

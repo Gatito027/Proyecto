@@ -1,0 +1,52 @@
+{% load static %}
+{% include "pages/modals/crearActividad.html" %}
+{% include "pages/modals/crearMaterial.html" %}
+
+<div class="container">
+    <h1 class="titulo">FASES COIL</h1>
+    <ul class="nav nav-pills justify-content-center">
+        <li class="nav-item">
+            <a class="nav-link {% if enlace_activo1 == 'fases' %}active{% endif %}" href="{% url 'FasesCoil' %}">
+                <i class="bi bi-house-door-fill"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if enlace_activo1 == 'fase1' %}active{% endif %}" href="{% url 'Fase1' %}">
+                Fase 1
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if enlace_activo1 == 'fase2' %}active{% endif %}" href="{% url 'Fase2' %}">
+                Fase 2
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if enlace_activo1 == 'fase3' %}active{% endif %}" href="{% url 'Fase3' %}">
+                Fase 3
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if enlace_activo1 == 'fase4' %}active{% endif %}" href="{% url 'Fase4' %}">
+                Fase 4
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if enlace_activo1 == 'fase5' %}active{% endif %}" href="{% url 'Fase5' %}">
+                Fase 5
+            </a>
+        </li>
+    </ul>
+    <div class="boton-desplegable text-center mt-3">
+        <button class="boton" onclick="toggleOpciones()">
+            <span class="material-symbols-outlined">add</span> Nueva
+        </button>
+        <div id="opciones" class="opciones-ocultas mt-2">
+            <button class="boton" data-bs-toggle="modal" data-bs-target="#crearTarea">
+                <i class="bi bi-journal-check"></i> Actividad
+            </button>
+            <button class="boton" data-bs-toggle="modal" data-bs-target="#crearMaterial2">
+                <i class="bi bi-lightbulb"></i> Material
+            </button>
+        </div>
+    </div>
+</div>
