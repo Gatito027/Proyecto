@@ -11,14 +11,20 @@
     background-color: #defffb;
 }
 .rojo{
-    background-color: rgb(255, 238, 238);
+    background-color: rgb(255, 240, 240);
 }
 .rojo:hover{
-    background-color: rgb(255, 227, 227);
+    background-color: rgb(255, 220, 220);
 }
 .violeta{
     background-color: rgb(255, 237, 255);
 }
 .violeta:hover{
     background-color: rgb(255, 213, 255);
+}
+.gris{
+    background-color: gray;
+}
+.gris:hover{
+    background-color: rgb(85, 85, 85);
 }
