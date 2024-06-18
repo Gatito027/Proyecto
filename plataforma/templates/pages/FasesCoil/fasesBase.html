@@ -38,6 +38,8 @@
             </a>
         </li>
     </ul>
+    {% if enlace_activo1 == 'fases' %}
+    {% else %}
     <div class="boton-desplegable text-center mt-3">
         <button class="boton" onclick="toggleOpciones()">
             <i class="bi bi-plus-lg"></i> Nueva
@@ -51,3 +53,4 @@
             </button>
         </div>
     </div>
+    {% endif %}

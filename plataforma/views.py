@@ -1,4 +1,4 @@
-from django.db import connection
+from django.db import connection, transaction
 from django.shortcuts import redirect, render
 from .models import *
 from datetime import datetime
@@ -27,18 +27,50 @@ def ListaProyectos(request, usuario):
             listaProfesores = cursor.fetchall()
             cursor.callproc('BuscarProyectos', [usuario])
             proyectos = cursor.fetchall()
+            cursor.callproc('BuscarNombreProyectos', [usuario])
+            listaProyectos = cursor.fetchall()
         elif rol == 2:
             cursor.callproc('ListaProfesoresproyecto', [])
             listaProfesores = cursor.fetchall()
             cursor.callproc('BuscarProyectoImpartido', [usuario])
             proyectos = cursor.fetchall()
+            cursor.callproc('BuscarProyectoNombreImpartido', [usuario])
+            listaProyectos = cursor.fetchall()
         else:
             return redirect('Error','Datos no validos')
     return render(request, 'pages/proyectos/ListaProyectos.html', {
         'rol': rol,
         'listaProfesores': listaProfesores,
         'proyectos': proyectos,
-        'usuario' : usuario })
+        'usuario' : usuario,
+        'listaProyectos' : listaProyectos})
+
+def ListaArchivoProyectos(request, usuario):
+    with connection.cursor() as cursor:
+        cursor.callproc('BuscarRolByID', [usuario])
+        rol = cursor.fetchone()[0]
+        if rol == 1:
+            cursor.callproc('ListaProfesoresproyecto', [])
+            listaProfesores = cursor.fetchall()
+            cursor.callproc('BuscarProyectosArchivado', [usuario])
+            proyectos = cursor.fetchall()
+            cursor.callproc('BuscarNombreProyectos', [usuario])
+            listaProyectos = cursor.fetchall()
+        elif rol == 2:
+            cursor.callproc('ListaProfesoresproyecto', [])
+            listaProfesores = cursor.fetchall()
+            cursor.callproc('BuscarProyectoImpartidoArchivado', [usuario])
+            proyectos = cursor.fetchall()
+            cursor.callproc('BuscarProyectoNombreImpartido', [usuario])
+            listaProyectos = cursor.fetchall()
+        else:
+            return redirect('Error','Datos no validos')
+    return render(request, 'pages/proyectos/ListaProyectos.html', {
+        'rol': rol,
+        'listaProfesores': listaProfesores,
+        'proyectos': proyectos,
+        'usuario' : usuario,
+        'listaProyectos' : listaProyectos})
 
 def generar_codigo_unico():
     while True:
@@ -77,11 +109,40 @@ def crearProyecto(request,usuario):
     else:
         return redirect('Error',resultado)
     
+
 def UnirteProyecto(request, usuario):
-    print(request.POST)
-    codigo=request.POST['codigo']
-    terminos=request.POST['terminos']
-    redirect('Error','Prueba')
+    codigo = request.POST['codigo']
+    terminos = request.POST['terminos']  
+    try:
+        with connection.cursor() as cursor:
+            cursor.callproc('CodigosClase', [])
+            codigos_bd = cursor.fetchall()
+            proyecto_existe = False
+            for tupla_codigo in codigos_bd:
+                if codigo in tupla_codigo:
+                        proyecto_existe = True
+            if proyecto_existe:
+                cursor.callproc('ComprobarAlumnoProyecto', [usuario, codigo])
+                comprobar = cursor.fetchone()[0]
+                if comprobar != codigo:
+                    cursor.callproc('buscarProyectoPorCodigo', [codigo])
+                    proyecto = cursor.fetchone()[0]
+                    with transaction.atomic():
+                        cursor.callproc('CrearProyectocoil', [usuario, proyecto])
+                        respuesta = cursor.fetchone()[0]
+                    if respuesta == 'Agregado exitosamente':
+                            return redirect('IntroduccionCoil')
+                    else:
+                        return redirect('Error','Error al agregar al proyecto')
+                else:
+                    return redirect('FasesCoil')
+            if not proyecto_existe:
+                return redirect('Error','El proyecto de este código no existe')
+    except Exception as e:
+        return redirect('Error',e)
+    return redirect('Error','Algo fallo')
+
+
 
 def IntroduccionCoil(request):
     return render(request,'pages/Proyectos/IntroduccionCoil.html',{'enlace_activo': 'coil'})

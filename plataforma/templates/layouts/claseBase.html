@@ -5,13 +5,16 @@
             <a class="nav-link {% if enlace_activo == 'coil' %}active{% endif %}" href="{% url 'IntroduccionCoil' %}">Introducción</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo == 'tablon' %}active{% endif %}" href="{% url 'ProyectoDetail' %}">Foro</a>
+            <a class="nav-link {% if enlace_activo == 'profesor' %}active{% endif %}" href="{% url 'IntroduccionCoil' %}">Presentación profesor</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if enlace_activo == 'tareas' %}active{% endif %}" href="{% url 'FasesCoil' %}">Fases Coil</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if enlace_activo == 'personas' %}active{% endif %}" href="{% url 'ListaAlumnosProfesores' %}">Personas</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo == 'tareas' %}active{% endif %}" href="{% url 'FasesCoil' %}">Fases Coil</a>
+            <a class="nav-link {% if enlace_activo == 'tablon' %}active{% endif %}" href="{% url 'ProyectoDetail' %}">Foro</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if enlace_activo == 'calificaciones' %}active{% endif %}" href="{% url 'SeguimientoActividad' %}">Progreso</a>

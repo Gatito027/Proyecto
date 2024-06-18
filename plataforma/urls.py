@@ -7,6 +7,7 @@ urlpatterns = [
     path('registro/', views.registro,name='Registro'),
     path ('registroFinal/', views.registroFinal,name="RegistroFinal"),
     path('listaProyectos/<int:usuario>/', views.ListaProyectos, name='ListaProyectos'),
+    path('listaArchivoProyectos/<int:usuario>/', views.ListaArchivoProyectos, name='ListaArchivoProyectos'),
     path ('listaAlumnosProfesores/', views.ListaAlumnosProfesores,name="ListaAlumnosProfesores"),
     path('introduccionCoil/', views.IntroduccionCoil,name="IntroduccionCoil"),
     path('proyectoDetail/', views.ProyectoDetail,name="ProyectoDetail"),
@@ -23,7 +24,7 @@ urlpatterns = [
     path('fase4/',views.Fase4,name="Fase4"),
     path('fase5/',views.Fase5,name="Fase5"),
     path('crearProyecto/<int:usuario>/',views.crearProyecto,name="crearProyecto"),
-    # path('unirteProyecto/<int:usuario>/',views.crearProyecto,name="unirteProyecto"),
+    path('unirteProyecto/<int:usuario>/',views.UnirteProyecto,name="unirteProyecto"),
     path('error/<str:error>',views.Error,name="Error")
     
     # path('articulos/',views.articulos,name="articulos"),

@@ -8,15 +8,16 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="post">
+                <form method="post" action="{% url 'unirteProyecto' usuario %}">
+                    {% csrf_token %}
                     <div class="mb-3">
                         <label for="classCode" class="form-label">Código del Proyecto</label>
-                        <input type="text" class="form-control" id="classCode" name="codigo"
+                        <input type="text" class="form-control" name="codigo"
                             placeholder="Ingresa el código de la clase" required>
                     </div>
 
                     <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="termsAgreement" name="terminos" required>
+                        <input type="checkbox" class="form-check-input" name="terminos" required>
                         <label class="form-check-label" for="termsAgreement">Acepto los términos y condiciones</label>
                     </div>
                     <button class="btn btn-primary">Unirte</button>
