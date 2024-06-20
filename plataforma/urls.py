@@ -25,7 +25,9 @@ urlpatterns = [
     path('fase5/',views.Fase5,name="Fase5"),
     path('crearProyecto/<int:usuario>/',views.crearProyecto,name="crearProyecto"),
     path('unirteProyecto/<int:usuario>/',views.UnirteProyecto,name="unirteProyecto"),
-    path('error/<str:error>',views.Error,name="Error")
+    path('Proyecto/<str:codigo>/<int:usuario>',views.UnirteProyectoPage, name="EntrarProyecto"),
+    path('error/<str:error>',views.Error,name="Error"),
+    path('AgregarUsuarioProyecto/<int:rol>/<int:usuario>/<int:proyecto>',views.AgregarUsuarioProyecto, name="AgregarUsuarioProyecto")
     
     # path('articulos/',views.articulos,name="articulos"),
     # path('articulo/',views.arcticulo,name="articulo"),

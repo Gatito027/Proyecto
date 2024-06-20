@@ -17,7 +17,6 @@ def registro (request):
 def registroFinal (request): 
     return render(request , 'pages/registro/registroFinal.html')
 
-
 def ListaProyectos(request, usuario):
     with connection.cursor() as cursor:
         cursor.callproc('BuscarRolByID', [usuario])
@@ -108,7 +107,6 @@ def crearProyecto(request,usuario):
         return redirect('IntroduccionCoil')
     else:
         return redirect('Error',resultado)
-    
 
 def UnirteProyecto(request, usuario):
     codigo = request.POST['codigo']
@@ -128,7 +126,7 @@ def UnirteProyecto(request, usuario):
                     cursor.callproc('buscarProyectoPorCodigo', [codigo])
                     proyecto = cursor.fetchone()[0]
                     with transaction.atomic():
-                        cursor.callproc('CrearProyectocoil', [usuario, proyecto])
+                        cursor.callproc('AgregarAlumno', [usuario, proyecto])
                         respuesta = cursor.fetchone()[0]
                     if respuesta == 'Agregado exitosamente':
                             return redirect('IntroduccionCoil')
@@ -142,14 +140,90 @@ def UnirteProyecto(request, usuario):
         return redirect('Error',e)
     return redirect('Error','Algo fallo')
 
+def AgregarUsuarioProyecto(request,rol,usuario,proyecto):
+    try:
+        if rol == 1:
+            with connection.cursor() as cursor:
+                with transaction.atomic():
+                        cursor.callproc('AgregarAlumno', [usuario, proyecto])
+                        respuesta = cursor.fetchone()[0]
+                        if respuesta == 'Agregado exitosamente':
+                            return redirect('IntroduccionCoil')
+                        else:
+                            return redirect('Error','Error al agregar al proyecto')
+        elif rol == 2:
+            with connection.cursor() as cursor:
+                with transaction.atomic():
+                        cursor.callproc('AgregarProfesor', [usuario, proyecto])
+                        respuesta = cursor.fetchone()[0]
+                        if respuesta == 'Agregado exitosamente':
+                            return redirect('IntroduccionCoil')
+                        else:
+                            return redirect('Error','Error al agregar al proyecto')
+        else:
+            return redirect('Error','Datos no validos')
+    except Exception as e:
+        return redirect('Error',e)
+    return redirect('Error','Algo fallo')
 
+def UnirteProyectoPage(request, codigo, usuario):
+    try:
+        with connection.cursor() as cursor:
+            cursor.callproc('CodigosClase', [])
+            codigos_bd = cursor.fetchall()
+            cursor.callproc('BuscarRolByID', [usuario])
+            rol = cursor.fetchone()[0]
+            cursor.callproc('BuscarNombreProyectos', [usuario])
+            listaProyectos = cursor.fetchall()
+            proyecto_existe = False
+            for tupla_codigo in codigos_bd:
+                if codigo in tupla_codigo:
+                    proyecto_existe = True
+            if proyecto_existe:
+                cursor.callproc('buscarProyectoPorCodigo', [codigo])
+                proyectoCodigo = cursor.fetchone()[0]
+                cursor.callproc('BuscarNombreProyectosByCodigo', [codigo])
+                ProyectoNombre = cursor.fetchone()[0]
+                if rol == 1:
+                    cursor.callproc('BuscarNombreProyectos', [usuario])
+                    listaProyectos = cursor.fetchall()
+                    cursor.callproc('ComprobarAlumnoProyecto', [usuario, codigo])
+                    comprobar = cursor.fetchone()[0]
+                    if comprobar != codigo:
+                        return render(request,'pages/Proyectos/EntrarProyecto.html', {
+                            'rol': rol,
+                            'usuario' : usuario,
+                            'listaProyectos' : listaProyectos,
+                            'Proyecto':ProyectoNombre})
+                    else:
+                        return redirect('FasesCoil')
+                elif rol == 2:
+                    cursor.callproc('BuscarProyectoNombreImpartido', [usuario])
+                    listaProyectos = cursor.fetchall()
+                    cursor.callproc('ComprobarProfesorProyecto', [usuario, codigo])
+                    comprobar = cursor.fetchone()[0]
+                    if comprobar != codigo:
+                        return render(request,'pages/Proyectos/EntrarProyecto.html', {
+                            'rol': rol,
+                            'usuario' : usuario,
+                            'listaProyectos' : listaProyectos,
+                            'Proyecto':ProyectoNombre,
+                            'codigo':proyectoCodigo})
+                    else:
+                        return redirect('FasesCoil')
+                else:
+                    return redirect('Error','Datos no validos')
+            if not proyecto_existe:
+                return redirect('Error','El proyecto de este código no existe')
+    except Exception as e:
+        return redirect('Error',e)
+    return redirect('Error','Algo fallo')
 
 def IntroduccionCoil(request):
     return render(request,'pages/Proyectos/IntroduccionCoil.html',{'enlace_activo': 'coil'})
 
 def ListaAlumnosProfesores (request): 
     return render(request , 'pages/Proyectos/ListaAlumnosProfesores.html',{'enlace_activo': 'personas'})
-
 
 def ProyectoDetail(request):
     return render(request,'pages/Proyectos/ProyectoDetail.html',{'enlace_activo': 'tablon'})
@@ -165,7 +239,6 @@ def SeguimientoActividad(request):
 
 def ActividadesPendientes(request):
     return render(request, 'pages/Actividades/ActividadesPendientes.html')
-
 
 def ViAlActividades(request):
     return render(request, 'pages/Actividades/ViAlActividades.html')

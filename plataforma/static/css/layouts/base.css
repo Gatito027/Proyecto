@@ -22,3 +22,9 @@
 .violetaDark:hover{
     background-color: rgb(75, 1, 75);
 }
+.gris{
+    background-color: gray;
+}
+.gris:hover{
+    background-color: rgb(85, 85, 85);
+}

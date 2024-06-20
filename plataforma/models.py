@@ -26,7 +26,6 @@ class Proyectos(models.Model):
     ciclo_escolar = models.CharField(max_length=15)
     achivo_proyecto = models.BooleanField(default=False)
     color = models.CharField(max_length=10)
-    enlace_reunion = models.TextField
     id_profesor = models.ForeignKey(Usuarios_general, on_delete=models.CASCADE)
 
 class Anuncios(models.Model):
