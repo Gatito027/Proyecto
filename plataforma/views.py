@@ -194,7 +194,8 @@ def UnirteProyectoPage(request, codigo, usuario):
                             'rol': rol,
                             'usuario' : usuario,
                             'listaProyectos' : listaProyectos,
-                            'Proyecto':ProyectoNombre})
+                            'Proyecto':ProyectoNombre,
+                            'codigo':proyectoCodigo})
                     else:
                         return redirect('FasesCoil')
                 elif rol == 2:

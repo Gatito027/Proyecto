@@ -81,10 +81,8 @@
             <div class="d-flex flex-column">
                 <a class="text-decoration-none p-2 mt-2 mb-4 gris text-white fs-4"
                     href="{% url 'ListaArchivoProyectos' usuario %}"><i class="bi bi-box-seam"></i> Archivo</a>
-                {% comment %} <a class="text-decoration-none p-2 mt-2 bg-success text-white fs-4" href="{% url 'ProyectoDetail' %}">Integradora
-                    II</a> {% endcomment %}
                     {% for proyecto in listaProyectos %}
-                    <a class="text-decoration-none p-2 mt-2 text-white fs-4 {{proyecto.2}}Dark" href="{% url 'ProyectoDetail' %}">{{proyecto.1}}</a>
+                    <a class="text-decoration-none p-2 mt-2 text-white fs-4 {{proyecto.2}}Dark" href="{% url 'FasesCoil' %}">{{proyecto.1}}</a>
                     {% endfor %}
             </div>
         </div>
