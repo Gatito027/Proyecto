@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,13 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plataforma</title>
     <link rel="stylesheet" href="{% static 'vendor/bootstrap-5.3.3-dist/css/bootstrap.min.css' %}">
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
-        <script src="{% static 'vendor/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js' %}"></script>
     <link href="{% static 'css/layouts/base.css' %}" rel="stylesheet">
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script> -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 </head>
@@ -24,50 +20,33 @@
     {% include "pages/modals/UnirteAProyecto.html" %}
     {% include "pages/modals/NuevoProyecto.html" %}
 
-    
-    <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+    <nav class="navbar navbar-expand-lg bg-primary navbar-dark">
         <div class="container-fluid">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'ListaProyectos' 1 %}">PROYECTS</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                
-                {% if rol == 2 %}
-                <li class="nav-item">
-                    <a class="nav-link active text-end" data-bs-toggle="modal" data-bs-target="#nuevoProyecto"
-                        href=""><span class="material-symbols-outlined">
-                            add
-                        </span></a>
-                </li>
-                {% else %}
-                <li class="nav-item">
-                    <a class="nav-link active text-end" data-bs-toggle="modal" data-bs-target="#joinClassModal"
-                        href=""><span class="material-symbols-outlined">
-                            add
-                        </span></a>
-                </li>
-                {% endif %}
-                <li class="nav-item">
-                    <div class="nav-link active text-end">|</div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-end" data-bs-toggle="modal" data-bs-target="#verUsuario"
-                        href="#"><span class="material-symbols-outlined">
-                            account_circle
-                        </span></a>
-                </li>
-                <li class="nav-item">
-                    <div class="nav-link active text-end">|</div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-end" href="{% url 'Login' %}"><span
-                            class="material-symbols-outlined">
-                            logout
-                        </span></a>
-                </li>
-            </ul>
+            <a class="navbar-brand" href="{% url 'ListaProyectos' 1 %}">PROYECTS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+                    {% if rol == 2 %}
+                    <a class="nav-link active" data-bs-toggle="modal" data-bs-target="#nuevoProyecto" href="">
+                        <span class="material-symbols-outlined">add</span>
+                    </a>
+                    {% else %}
+                    <a class="nav-link active" data-bs-toggle="modal" data-bs-target="#joinClassModal" href="">
+                        <span class="material-symbols-outlined">add</span>
+                    </a>
+                    {% endif %}
+                    <div class="nav-link active mx-2">|</div>
+                    <a class="nav-link active" data-bs-toggle="modal" data-bs-target="#verUsuario" href="#">
+                        <span class="material-symbols-outlined">account_circle</span>
+                    </a>
+                    <div class="nav-link active mx-2">|</div>
+                    <a class="nav-link active" href="{% url 'Login' %}">
+                        <span class="material-symbols-outlined">logout</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -76,23 +55,23 @@
             <h1 class="offcanvas-title">PROYECTS</h1>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
-
         <div class="offcanvas-body">
             <div class="d-flex flex-column">
-                <a class="text-decoration-none p-2 mt-2 mb-4 gris text-white fs-4"
-                    href="{% url 'ListaArchivoProyectos' usuario %}"><i class="bi bi-box-seam"></i> Archivo</a>
-                    {% for proyecto in listaProyectos %}
-                    <a class="text-decoration-none p-2 mt-2 text-white fs-4 {{proyecto.2}}Dark" href="{% url 'FasesCoil' %}">{{proyecto.1}}</a>
-                    {% endfor %}
+                <a class="text-decoration-none p-2 mt-2 mb-4 gris text-white fs-4" href="{% url 'ListaArchivoProyectos' usuario %}">
+                    <i class="bi bi-box-seam"></i> Archivo
+                </a>
+                {% for proyecto in listaProyectos %}
+                <a class="text-decoration-none p-2 mt-2 text-white fs-4 {{proyecto.2}}Dark" href="{% url 'FasesCoil' %}">
+                    {{proyecto.1}}
+                </a>
+                {% endfor %}
             </div>
         </div>
     </div>
 
     <div class="container-fluid mt-3 mb-1">
         <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#demo">
-            <span class="material-symbols-outlined">
-                menu
-            </span>
+            <span class="material-symbols-outlined">menu</span>
         </button>
     </div>
     <div class="container">

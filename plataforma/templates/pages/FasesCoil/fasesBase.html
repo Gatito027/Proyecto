@@ -1,14 +1,16 @@
+
 {% load static %}
+<link rel="stylesheet" href="{% static 'css/Actividades/ListaActividadesPorFases.css' %}">
+{% include "layouts/claseBase.html" %}
 {% include "pages/modals/crearActividad.html" %}
 {% include "pages/modals/crearMaterial.html" %}
-<link rel="stylesheet" href="{% static 'css/Actividades/ListaActividadesPorFases.css' %}">
 <script src="{% static 'javascripts/tareasclase.js' %}"></script>
 
 
     <h1 class="titulo">FASES COIL</h1>
     <ul class="nav nav-pills justify-content-center">
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo1 == 'fases' %}active{% endif %}" href="{% url 'FasesCoil' %}">
+            <a class="nav-link {% if enlace_activo1 == 'fases' %}active color{% endif %}" href="{% url 'FasesCoil' %}">
                 <i class="bi bi-house-door-fill"></i>
             </a>
         </li>
@@ -42,7 +44,7 @@
     {% else %}
     <div class="boton-desplegable text-center mt-3">
         <button class="boton" onclick="toggleOpciones()">
-            <i class="bi bi-plus-lg"></i> Nueva
+            <i class="bi bi-caret-down-fill"></i> Nueva
         </button>
         <div id="opciones" class="opciones-ocultas mt-2">
             <button class="boton" data-bs-toggle="modal" data-bs-target="#crearTarea">

@@ -28,3 +28,18 @@
 .nav-link{
     color: #009882;
 }
+/**Agregado*/
+.nav-link:hover{
+    color: #006051;
+}
+.card:hover{
+    background: #defffb;
+}
+.nav-pills .nav-link.active {
+    background-color: #009882; /* Cambia este valor al color deseado */
+    color: #fff; /* Cambia este valor al color de texto deseado */
+}
+.nav-pills .nav-link.active:hover {
+    background-color: #006051; /* Cambia este valor al color deseado */
+    color: #fff; /* Cambia este valor al color de texto deseado */
+}
