@@ -1,8 +1,7 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/baseAdmin.html' %}
 {% load static %}
 {% block content %}
-{% include "layouts/claseBase.html" %}
-<link rel="stylesheet" href="{% static 'css/calificacionesclase.css' %}">
+{% include "layouts/ClaseBase.html" %}
 <body>
     <h1>Introducción a COIL</h1>
     <p>
@@ -32,5 +31,6 @@
         <li><strong>Preparación para un Mundo Globalizado:</strong> Desarrolla competencias clave como la comunicación intercultural, la colaboración virtual y el manejo de tecnologías digitales, habilidades esenciales en un mercado laboral globalizado.</li>
     </ul>
 </body>
+
 
 {% endblock %}

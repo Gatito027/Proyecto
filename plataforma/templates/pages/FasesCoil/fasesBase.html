@@ -1,47 +1,27 @@
 
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/Actividades/ListaActividadesPorFases.css' %}">
-{% include "layouts/claseBase.html" %}
-{% include "pages/modals/crearActividad.html" %}
-{% include "pages/modals/crearMaterial.html" %}
-<script src="{% static 'javascripts/tareasclase.js' %}"></script>
-
-
+{% include "layouts/ClaseBase.html" %}
+{% include "pages/Modals/CrearActividad.html" %}
+{% include "pages/Modals/CrearMaterial.html" %}
+<script src="{% static 'javascripts/Actividades/ListaActividadesPorFases.js' %}"></script>
     <h1 class="titulo">FASES COIL</h1>
     <ul class="nav nav-pills justify-content-center">
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo1 == 'fases' %}active color{% endif %}" href="{% url 'FasesCoil' %}">
+            <a class="nav-link {% if enlace_activo1 == 'fases' %}active color{% endif %}" href="{% url 'FasesCoil' codigo %}">
                 <i class="bi bi-house-door-fill"></i>
             </a>
         </li>
+        {% for fase in fases %}
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo1 == 'fase1' %}active{% endif %}" href="{% url 'Fase1' %}">
-                Fase 1
+            <a class="nav-link {% if enlace_activo1 == fase.1 %}active{% endif %}" href="{% url 'Fase' codigo fase.1 %}">
+                {{fase.1}}
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link {% if enlace_activo1 == 'fase2' %}active{% endif %}" href="{% url 'Fase2' %}">
-                Fase 2
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if enlace_activo1 == 'fase3' %}active{% endif %}" href="{% url 'Fase3' %}">
-                Fase 3
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if enlace_activo1 == 'fase4' %}active{% endif %}" href="{% url 'Fase4' %}">
-                Fase 4
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if enlace_activo1 == 'fase5' %}active{% endif %}" href="{% url 'Fase5' %}">
-                Fase 5
-            </a>
-        </li>
+        {% endfor %}
     </ul>
     {% if enlace_activo1 == 'fases' %}
-    {% else %}
+    {% elif proyectoDetails.0.8 == False and enlace_activo1 != 'fases' and layout.0 == "Profesor" %}
     <div class="boton-desplegable text-center mt-3">
         <button class="boton" onclick="toggleOpciones()">
             <i class="bi bi-caret-down-fill"></i> Nueva
@@ -55,4 +35,5 @@
             </button>
         </div>
     </div>
+    {% else %}
     {% endif %}

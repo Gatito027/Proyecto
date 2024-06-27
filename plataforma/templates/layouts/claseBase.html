@@ -1,28 +1,39 @@
 {% load static %}
+{% if proyectoDetails.0.9 == "violeta" %}
+<link rel="stylesheet" href="{% static 'css/Proyectos/Temas/violeta.css' %}">
+{% elif proyectoDetails.0.9 == "azul" %}
+<link rel="stylesheet" href="{% static 'css/Proyectos/Temas/azul.css' %}">
+{% elif proyectoDetails.0.9 == "rojo" %}
+<link rel="stylesheet" href="{% static 'css/Proyectos/Temas/rojo.css' %}">
+{% elif proyectoDetails.0.9 == "verde" %}
+<link rel="stylesheet" href="{% static 'css/Proyectos/Temas/verde.css' %}">
+{%endif%}
 <div>
     <ul class="nav nav-tabs justify-content-center">
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo == 'coil' %}active{% endif %}" href="{% url 'IntroduccionCoil' %}">Introducción</a>
+            <a class="nav-link {% if enlace_activo == 'coil' %}active{% endif %}" href="{% url 'IntroduccionCoil' codigo %}">Introducción</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo == 'profesor' %}active{% endif %}" href="{% url 'IntroduccionCoil' %}">Presentación profesor</a>
+            <a class="nav-link {% if enlace_activo == 'profesor' %}active{% endif %}" href="{% url 'IntroduccionCoil' codigo %}">Presentación profesor</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo == 'tareas' %}active{% endif %}" href="{% url 'FasesCoil' %}">Fases Coil</a>
+            <a class="nav-link {% if enlace_activo == 'tareas' %}active{% endif %}" href="{% url 'FasesCoil' codigo %}">Fases Coil</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo == 'personas' %}active{% endif %}" href="{% url 'ListaAlumnosProfesores' %}">Personas</a>
+            <a class="nav-link {% if enlace_activo == 'personas' %}active{% endif %}" href="{% url 'ListaAlumnosProfesores' codigo %}">Personas</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo == 'tablon' %}active{% endif %}" href="{% url 'ProyectoDetail' %}">Foro</a>
+            <a class="nav-link {% if enlace_activo == 'tablon' %}active{% endif %}" href="{% url 'ProyectoDetail' codigo %}">Foro</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo == 'calificaciones' %}active{% endif %}" href="{% url 'SeguimientoActividad' %}">Progreso</a>
+            <a class="nav-link {% if enlace_activo == 'calificaciones' %}active{% endif %}" href="{% url 'SeguimientoActividad' codigo %}">Progreso</a>
         </li>
+        {% if layout.0 == "Profesor" %}
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo == 'configurar' %}active{% endif %}" href="{% url 'ConfiguracionProyecto' %}"><span class="material-symbols-outlined">
+            <a class="nav-link {% if enlace_activo == 'configurar' %}active{% endif %}" href="{% url 'ConfiguracionProyecto' codigo %}"><span class="material-symbols-outlined">
                     settings
                 </span></a>
         </li>
+        {% endif %}
     </ul>
 </div>

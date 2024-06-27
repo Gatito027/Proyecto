@@ -1,10 +1,23 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/Base.html' %}
 {% load static %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/Actividades/ListaActividadesPorFases.css' %}">
-<script src="{% static 'javascripts/tareasclase.js' %}"></script>
+<script src="{% static 'javascripts/Actividades/ListaActividadesPorFases.js' %}"></script>
 {% include "layouts/claseBase.html" %}
-{% include "pages/FasesCoil/fasesBase.html" %}
+{% include "pages/Modals/CrearActividad.html" %}
+{% include "pages/Modals/CrearMaterial.html" %}
+<h1 class="titulo">Actividades</h1>
+<div class="boton-desplegable">
+    <button class="boton" onclick="toggleOpciones()"><span class="material-symbols-outlined">
+            add
+        </span> Nueva</button>
+    <div id="opciones" class="opciones-ocultas mt-2">
+        <button class="boton" data-bs-toggle="modal" data-bs-target="#crearTarea"><i class="bi bi-journal-check"></i>
+            Actividad</button>
+        <button class="boton" data-bs-toggle="modal" data-bs-target="#crearMaterial2"><i class="bi bi-lightbulb"></i>
+            Material</button>
+    </div>
+</div>
 <h2 class="tema mt-2 mb-2">Fase 1: Icebreakers</h2>
 <a class="navegacion" href="{% url 'ViAlActividades' %}">
     <div class="icono"><svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor"

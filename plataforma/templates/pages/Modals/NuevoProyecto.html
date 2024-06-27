@@ -10,7 +10,7 @@
 
             <!-- Modal body -->
             <div class="modal-body">
-                <form action="{% url 'crearProyecto' usuario %}" method="post" class="was-validated">
+                <form action="{% url 'crearProyecto' %}" method="post" class="was-validated">
                     {% csrf_token %}
                     <div class="mb-3 mt-3">
                         <label for="uname" class="form-label">Nombre del proyecto:</label>
@@ -23,8 +23,7 @@
                     </div>
                     <div class="mb-3 mt-3">
                         <label for="uname" class="form-label">Materia:</label>
-                        <input type="text" class="form-control" placeholder="Materia relacionada al proyecto" name="materia"
-                            required>
+                        <input type="text" class="form-control" placeholder="Materia relacionada al proyecto" name="materia">
                         <div class="valid-feedback"><span class="material-symbols-outlined">
                             check_circle
                             </span></div>

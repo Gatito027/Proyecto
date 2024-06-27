@@ -1,8 +1,8 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/baseAdmin.html' %}
 {% load static %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/Proyectos/ListaAlumnosProfesores.css' %}">
-{% include "layouts/claseBase.html" %}
+{% include "layouts/ClaseBase.html" %}
 <div class="container">
     <header>
         <h1>COMPAÑEROS</h1>
@@ -10,18 +10,17 @@
     <section class="profesor">
         <h2>Profesor</h2>
         <hr>
-        <p>Jose Luis Herrera Gallardo</p>
+        {% for profesor in profesores %}
+        <p>{{profesor.0}} {{profesor.1}}</p>
+        {% endfor %}
     </section>
     <section class="alumnos">
         <h2>Alumnos</h2>
         <hr>
         <ul>
-            <li>Juan Mateo Hernandez De Luna</li>
-            <li>Cristian Andres Cid Rodriguez</li>
-            <li>Ezequiel Cruz Paz</li>
-            <li>Angel Perez Perez</li>
-            <li>Brian Emanuel Flores Hernandez</li>
-            <li>Benjamin Peña Marin</li>
+            {% for alumno in alumnos %}
+            <li>{{alumno.0}} {{alumno.1}}</li>
+            {% endfor %}
         </ul>
     </section>
 </div>

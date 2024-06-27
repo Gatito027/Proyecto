@@ -1,16 +1,17 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/baseAdmin.html' %}
 {% load static %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/Proyectos/ProyectoDetail.css' %}">
-{% include "layouts/claseBase.html" %}
+{% include "layouts/ClaseBase.html" %}
 <div class="titulo">
-    <h1>Proyecto titulo</h1>
+    <h1>{{proyectoDetails.0.1}}</h1>
 </div>
 <div class="row">
+    {% if proyectoDetails.0.8 == False %}
     <div class="col-sm-3">
         <div class="mt-2 tarjeta">
             <p class="titulo-2">Unirse a la conferencia</p>
-            <button class="boton_unirse" onclick="location.href='https://zoom.us/es/join'">Entrar</button>
+            <button class="boton_unirse" onclick="location.href='https://zoom.us/es/join/{{proyectoDetails.0.10}}'">Entrar</button>
         </div>
         <div class="mt-2 tarjeta">
             <p class="titulo-2">Actividades pendientes</p>
@@ -23,10 +24,12 @@
                     <div class="fecha">22/05/24</div>
                 </div>
             </a>
-            <p class="btn btn-outline-primary mt-3" onclick=location.href={% url 'FasesCoil' %}>Mostrar más</p>
+            <a class="btn btn-outline-primary mt-3" href="{% url 'FasesCoil' codigo %}">Mostrar más</a>
         </div>
     </div>
+    {% endif %}
     <div class="col mt-2">
+        {% if proyectoDetails.0.8 == False %}
         <div>
             <form action="">
                 <div class="input-group mb-3 input-group-lg">
@@ -39,6 +42,7 @@
                 </div>
             </form>
         </div>
+        {% endif %}
         <div class="mt-2 tarjeta">
             <div class="correguir">
                 <div class="icono"><span class="material-symbols-outlined">
@@ -50,6 +54,7 @@
                 </div>
             </div>
             <p class="texto">In minim non adipisicing aute irure enim fugiat cupidatat qui magna do pariatur.</p>
+            {% if proyectoDetails.0.8 == False %}
             <div>
                 <form action="">
                     <div class="input-group mb-3 input-group-lg">
@@ -62,6 +67,7 @@
                     </div>
                 </form>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>
