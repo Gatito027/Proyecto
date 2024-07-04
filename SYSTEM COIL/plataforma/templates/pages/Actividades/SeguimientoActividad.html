@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{% static 'css/Actividades/SeguimientoActividad.css' %}">
 {% include "layouts/ClaseBase.html" %}
 <div>
-    <h1 class="titulo">PROGRESO DEL GRUPO</h1>
+    <h1 class="titulo">Progreso del grupo</h1>
 </div>
 <h2 class="tema mt-2 mb-2">Avance por fase</h2>
 <div class="container mt-3">
@@ -12,26 +12,27 @@
         <thead>
             <tr>
                 <th>Alumnos</th>
-                <th>Icebreakers</th>
-                <th>Comparative discussion</th>
-                <th>Collaborative project work</th>
-                <th>Presentation</th>
-                <th>Porcentaje total</th>
+                {% for fase in fases %}
+                <th>{{fase.1}}</th>
+                {% endfor %}
             </tr>
         </thead>
         <tbody>
+            {% for alumno in alumnos %}
             <tr>
-                <td>John</td>
+                <td>{{alumno.0}} {{alumno.1}}</td>
                 <td>0%</td>
                 <td>0%</td>
                 <td>0%</td>
                 <td>0%</td>
                 <td>0%</td>
             </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>
-<h2 class="tema mt-2 mb-2">Avance de Icebreakers 25%</h2>
+{% for fase in fases %}
+<h2 class="tema mt-2 mb-2">{{fase.1}}</h2> <h2 class="tema mt-2 mb-2">Puntuación total: {{fase.2}}</h2>
 <div class="container mt-3">
     <table class="table table-bordered">
         <thead>
@@ -42,8 +43,9 @@
             </tr>
         </thead>
         <tbody>
+            {% for alumno in alumnos %}
             <tr>
-                <td>John</td>
+                <td>{{alumno.0}} {{alumno.1}}</td>
                 <td>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">
@@ -51,76 +53,9 @@
                 </td>
                 <td>0%</td>
             </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>
-<h2 class="tema mt-2 mb-2">Avance de Comparative discussion 25%</h2>
-<div class="container mt-3">
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Alumnos</th>
-                <th>Actividad de prueba</th>
-                <th>Porcentaje total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>John</td>
-                <td>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">
-                    </div>
-                </td>
-                <td>0%</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<h2 class="tema mt-2 mb-2">Avance de Collaborative project work 25%</h2>
-<div class="container mt-3">
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Alumnos</th>
-                <th>Actividad de prueba</th>
-                <th>Porcentaje total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>John</td>
-                <td>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">
-                    </div>
-                </td>
-                <td>0%</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<h2 class="tema mt-2 mb-2">Avance de Presentation 25%</h2>
-<div class="container mt-3">
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Alumnos</th>
-                <th>Actividad de prueba</th>
-                <th>Porcentaje total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>John</td>
-                <td>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">
-                    </div>
-                </td>
-                <td>0%</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+{% endfor %}
 {% endblock %}

@@ -52,7 +52,11 @@ urlpatterns = [
     path('fase5/',views.Fase5,name="Fase5"),
     path('error/<str:error>',views.Error,name="Error"),
     path('Proyecto/<str:codigo>',views.UnirteProyectoPage, name="EntrarProyecto"),
-    path('AgregarUsuarioProyecto/<int:proyecto>/<str:codigo>',views.AgregarUsuarioProyecto, name="AgregarUsuarioProyecto")
+    path('AgregarUsuarioProyecto/<int:proyecto>/<str:codigo>',views.AgregarUsuarioProyecto, name="AgregarUsuarioProyecto"),
+    path('EditarProyecto/<int:proyecto>/<str:codigo>',views.editarProyecto, name="EditarProyecto"),
+    path('ZoomProyecto/<int:proyecto>/<str:codigo>',views.zoomProyecto, name="ZoomProyecto"),
+    path('ArchivarProyecto/<int:proyecto>/<str:codigo>',views.ArchivarProyecto, name="ArchivarProyecto"),
+    path('ReactivarProyecto/<int:proyecto>/<str:codigo>',views.ReactivarProyecto, name="ReactivarProyecto")
     # path('articulos/',views.articulos,name="articulos"),
     # path('articulo/',views.arcticulo,name="articulo"),
 

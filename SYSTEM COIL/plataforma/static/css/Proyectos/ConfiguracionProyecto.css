@@ -40,7 +40,27 @@
     background-color: gray;
     padding: 5px 15px 5px 15px;
     border: 0px;
+    text-decoration: none;
 }
 .botonArchivar:hover{
     background-color: rgb(74, 74, 74);
 }
+.botonReactivar{
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    background-color: green;
+    padding: 5px 15px 5px 15px;
+    border: 0px;
+    text-decoration: none;
+}
+.botonReactivar:hover{
+    background-color: rgb(1, 74, 1);
+}
+/*#mensaje {
+    background-color: grey;
+    color: white;
+    padding: 10px;
+    margin-top: 10px;
+    display: none;
+}*/

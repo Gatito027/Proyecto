@@ -1,3 +1,8 @@
+{% load static %}
+
+<script src="{% static 'javascripts/Modals/NuevoProyecto.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <div class="modal" id="nuevoProyecto">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -14,56 +19,39 @@
                     {% csrf_token %}
                     <div class="mb-3 mt-3">
                         <label for="uname" class="form-label">Nombre del proyecto:</label>
-                        <input type="text" class="form-control" placeholder="Titulo del proyecto" name="nombre"
-                            required>
-                        <div class="valid-feedback"><span class="material-symbols-outlined">
-                            check_circle
-                            </span></div>
-                        <div class="invalid-feedback">Necesitas llenarlo.</div>
+                        <input type="text" class="form-control" placeholder="Titulo del proyecto" name="nombre" required>
+                        <div class="valid-feedback"><span class="material-symbols-outlined">check_circle</span></div>
+                        <div class="invalid-feedback">Dato requerido.</div>
                     </div>
                     <div class="mb-3 mt-3">
                         <label for="uname" class="form-label">Materia:</label>
                         <input type="text" class="form-control" placeholder="Materia relacionada al proyecto" name="materia">
-                        <div class="valid-feedback"><span class="material-symbols-outlined">
-                            check_circle
-                            </span></div>
-                        <div class="invalid-feedback">Necesitas llenarlo.</div>
+                        <div class="valid-feedback"><span class="material-symbols-outlined">check_circle</span></div>
+                        <div class="invalid-feedback">Dato requerido.</div>
                     </div>
                     <div class="mb-3 mt-3">
-                        <label for="uname" class="form-label">Descripcion:</label>
-                        <textarea class="form-control" placeholder="Describe el proyecto" name="descripcion"
-                            required></textarea>
-                        <div class="valid-feedback"><span class="material-symbols-outlined">
-                            check_circle
-                            </span></div>
-                        <div class="invalid-feedback">Necesitas llenarlo.</div>
+                        <label for="uname" class="form-label">Descripción:</label>
+                        <textarea class="form-control" placeholder="Describe el proyecto" name="descripcion" required></textarea>
+                        <div class="valid-feedback"><span class="material-symbols-outlined">check_circle</span></div>
+                        <div class="invalid-feedback">Dato requerido.</div>
                     </div>
                     <div class="mb-3 mt-3">
                         <label for="uname" class="form-label">Fecha de inicio del proyecto:</label>
-                        <input type="date" class="form-control" name="fecha_inicio"
-                            required>
-                        <div class="valid-feedback"><span class="material-symbols-outlined">
-                            check_circle
-                            </span></div>
-                        <div class="invalid-feedback">Necesitas llenarlo.</div>
+                        <input type="date" class="form-control" name="fecha_inicio" required>
+                        <div class="valid-feedback"><span class="material-symbols-outlined">check_circle</span></div>
+                        <div class="invalid-feedback">Dato requerido.</div>
                     </div>
                     <div class="mb-3 mt-3">
                         <label for="uname" class="form-label">Fecha de fin del proyecto:</label>
-                        <input type="date" class="form-control" name="fecha_fin"
-                            required>
-                        <div class="valid-feedback"><span class="material-symbols-outlined">
-                            check_circle
-                            </span></div>
-                        <div class="invalid-feedback">Necesitas llenarlo.</div>
+                        <input type="date" class="form-control" name="fecha_fin" required>
+                        <div class="valid-feedback"><span class="material-symbols-outlined">check_circle</span></div>
+                        <div class="invalid-feedback">Dato requerido.</div>
                     </div>
                     <div class="mb-3 mt-3">
                         <label for="uname" class="form-label">Ciclo escolar:</label>
-                        <input type="text" class="form-control" placeholder="2023-2024" name="ciclo_escolar"
-                            required>
-                        <div class="valid-feedback"><span class="material-symbols-outlined">
-                            check_circle
-                            </span></div>
-                        <div class="invalid-feedback">Necesitas llenarlo.</div>
+                        <input type="text" class="form-control" placeholder="Mayo-Agosto 2024" name="ciclo_escolar" required>
+                        <div class="valid-feedback"><span class="material-symbols-outlined">check_circle</span></div>
+                        <div class="invalid-feedback">Dato requerido.</div>
                     </div>
                     <div class="mb-3 mt-3">
                         <label for="uname" class="form-label">Color distintivo:</label>
@@ -80,9 +68,12 @@
 
             <!-- Modal footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
             </div>
 
         </div>
     </div>
 </div>
+
+
+

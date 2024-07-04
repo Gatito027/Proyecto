@@ -469,15 +469,25 @@ def ConfiguracionProyecto(request, codigo):
         return redirect('EntrarProyecto', codigo)
     elif comprobacion == 'Inscrito':
         if tipo_usuario == "Profesor":
+            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+            id_profesor = profesor.id
             with connection.cursor() as cursor:
                 cursor.callproc('BuscarProyectoByCodigo', [codigo])
                 proyectoDetails = cursor.fetchall()
+                cursor.callproc('buscarProyectoPorCodigo', [codigo])
+                proyectoId = cursor.fetchone()[0]
+                fecha_inicio = str(proyectoDetails[0][5])
+                fecha_fin = str(proyectoDetails[0][6])
                 return render(request,'pages/Proyectos/ConfiguracionProyecto.html',{
                     'enlace_activo': 'configurar',
                     'proyectoDetails': proyectoDetails,
                     'codigo': codigo,
                     'usuario' : usuario,
-                    'layout' : layout})
+                    'layout' : layout,
+                    'fecha_inicio': fecha_inicio,
+                    'fecha_fin': fecha_fin,
+                    'usuario_id': id_profesor,
+                    'proyectoId': proyectoId})
         else:
             return redirect('Error', 'Sin permisos')
     else:
@@ -495,24 +505,39 @@ def SeguimientoActividad(request, codigo):
         with connection.cursor() as cursor:
             cursor.callproc('BuscarProyectoByCodigo', [codigo])
             proyectoDetails = cursor.fetchall()
+            cursor.callproc('buscarProyectoPorCodigo', [codigo])
+            proyectoCodigo = cursor.fetchone()[0]
+            cursor.callproc('ListasFasesByProyecto', [proyectoCodigo])
+            fases = cursor.fetchall()
+            cursor.callproc('BuscarProyectoAlumnos', [proyectoCodigo])
+            alumnos = cursor.fetchall()
             return render(request,'pages/Actividades/SeguimientoActividad.html',{
                 'enlace_activo': 'calificaciones',
                 'proyectoDetails': proyectoDetails,
                 'codigo': codigo,
                 'usuario' : usuario,
-                'layout' : layout})
+                'layout' : layout,
+                'fases': fases,
+                'alumnos': alumnos})
     else:
         return redirect('Error', comprobacion)
 
 def ActividadesPendientes(request):
     return render(request, 'pages/Actividades/ActividadesPendientes.html')
 
-
+@login_required(login_url='Login')
 def ViAlActividades(request):
-    return render(request, 'pages/Actividades/ViAlActividades.html')
+    layout = LlenarLayout(request)
+    return render(request, 'pages/Actividades/ViAlActividades.html',{
+        'layout': layout
+    })
 
+@login_required(login_url='Login')
 def ViAlMateriales(request):
-    return render(request, 'pages/Materiales/ViAlMateriales.html')
+    layout = LlenarLayout(request)
+    return render(request, 'pages/Materiales/ViAlMateriales.html',{
+        'layout': layout
+    })
 
 @login_required(login_url='Login')
 def RegistroAlumno(request):
@@ -810,6 +835,113 @@ def Error(request,error):
     layout = LlenarLayout(request)
     return render(request, 'pages/error.html',{'error':error,'layout':layout})
 
+@login_required(login_url='Login')
+def editarProyecto(request,proyecto,codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    try:
+        if tipo_usuario == "Alumno":
+            return redirect('Error', 'sin permisos')
+        elif tipo_usuario == "Profesor":
+            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+        else:
+            return redirect('Error', 'Datos no válidos')
+        nombre = request.POST.get('nombre')
+        materia = request.POST.get('materia')
+        descripcion = request.POST.get('descripcion')
+        fecha_inicio = request.POST.get('fecha_inicio')
+        fecha_fin = request.POST.get('fecha_fin')
+        ciclo_escolar = request.POST.get('ciclo_escolar')
+        color = request.POST.get('color')
+        with connection.cursor() as cursor:
+            cursor.callproc('EditarProyecto', [
+                proyecto,
+                str(nombre),
+                str(materia),
+                str(descripcion),
+                datetime.strptime(fecha_inicio, '%Y-%m-%d').date(),
+                datetime.strptime(fecha_fin, '%Y-%m-%d').date(),
+                str(ciclo_escolar),
+                str(color)
+            ])
+            resultado = cursor.fetchone()[0]
+        if resultado == 'Agregado exitosamente':
+            return redirect('ConfiguracionProyecto', codigo)
+        else:
+            return redirect('Error', resultado)
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
+
+@login_required(login_url='Login')
+def zoomProyecto(request,proyecto,codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    try:
+        if tipo_usuario == "Alumno":
+            return redirect('Error', 'sin permisos')
+        elif tipo_usuario == "Profesor":
+            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+        else:
+            return redirect('Error', 'Datos no válidos')
+        zoom = request.POST.get('zoom')
+        with connection.cursor() as cursor:
+            cursor.callproc('ZoomProyecto', [
+                proyecto,
+                str(zoom)
+            ])
+            resultado = cursor.fetchone()[0]
+        if resultado == 'Agregado exitosamente':
+            return redirect('ConfiguracionProyecto', codigo)
+        else:
+            return redirect('Error', resultado)
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
+
+@login_required(login_url='Login')
+def ArchivarProyecto(request,proyecto,codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    try:
+        if tipo_usuario == "Alumno":
+            return redirect('Error', 'sin permisos')
+        elif tipo_usuario == "Profesor":
+            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+        else:
+            return redirect('Error', 'Datos no válidos')
+        with connection.cursor() as cursor:
+            cursor.callproc('ArchivoProyecto', [
+                proyecto
+            ])
+            resultado = cursor.fetchone()[0]
+        if resultado == 'Agregado exitosamente':
+            return redirect('ConfiguracionProyecto', codigo)
+        else:
+            return redirect('Error', resultado)
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
+
+@login_required(login_url='Login')
+def ReactivarProyecto(request,proyecto,codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    try:
+        if tipo_usuario == "Alumno":
+            return redirect('Error', 'sin permisos')
+        elif tipo_usuario == "Profesor":
+            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+        else:
+            return redirect('Error', 'Datos no válidos')
+        with connection.cursor() as cursor:
+            cursor.callproc('ReactivarProyecto', [
+                proyecto
+            ])
+            resultado = cursor.fetchone()[0]
+        if resultado == 'Agregado exitosamente':
+            return redirect('ConfiguracionProyecto', codigo)
+        else:
+            return redirect('Error', resultado)
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
 # def articulos(request):
 #     return render(request,'pages/articulos.html')
 
