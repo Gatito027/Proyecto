@@ -56,7 +56,8 @@ urlpatterns = [
     path('EditarProyecto/<int:proyecto>/<str:codigo>',views.editarProyecto, name="EditarProyecto"),
     path('ZoomProyecto/<int:proyecto>/<str:codigo>',views.zoomProyecto, name="ZoomProyecto"),
     path('ArchivarProyecto/<int:proyecto>/<str:codigo>',views.ArchivarProyecto, name="ArchivarProyecto"),
-    path('ReactivarProyecto/<int:proyecto>/<str:codigo>',views.ReactivarProyecto, name="ReactivarProyecto")
+    path('ReactivarProyecto/<int:proyecto>/<str:codigo>',views.ReactivarProyecto, name="ReactivarProyecto"),
+    path('CrearAnucio/<int:proyecto>/<str:codigo>',views.PublicarComentario,name="PublicarComentario")
     # path('articulos/',views.articulos,name="articulos"),
     # path('articulo/',views.arcticulo,name="articulo"),
 

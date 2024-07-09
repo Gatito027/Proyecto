@@ -31,10 +31,11 @@
     <div class="col mt-2">
         {% if proyectoDetails.0.8 == False %}
         <div>
-            <form action="">
+            <form action="{% url 'PublicarComentario' proyectoId codigo %}" method="post">
+                {% csrf_token %}
                 <div class="input-group mb-3 input-group-lg">
-                    <input type="text" class="form-control px-2" placeholder="Publica algo...">
-                    <button class="boton_enviar"><svg xmlns="http://www.w3.org/2000/svg" height="40px"
+                    <textarea class="form-control px-2" placeholder="Publica algo..." name="comentario"></textarea>
+                    <button class="boton_enviar" type="submit"><svg xmlns="http://www.w3.org/2000/svg" height="40px"
                             viewBox="0 -960 960 960" width="40px" fill="#FFFFFF">
                             <path
                                 d="M120-160v-640l760 320-760 320Zm60-93 544-227-544-230v168l242 62-242 60v167Zm0 0v-457 457Z" />
@@ -43,17 +44,18 @@
             </form>
         </div>
         {% endif %}
+        {% for anuncio in anuncios %}
         <div class="mt-2 tarjeta">
             <div class="correguir">
                 <div class="icono"><span class="material-symbols-outlined">
                     account_circle
                     </span></div>
                 <div class="columna">
-                    <div class="titulo-2">Autor</div>
-                    <div class="fecha">22/05/24</div>
+                    <div class="titulo-2">{{anuncio.4}} {{anuncio.5}}</div>
+                    <div class="fecha">{{anuncio.3}}{% if anuncio.2 != anuncio.3 %} (Editado){% endif %}</div>
                 </div>
             </div>
-            <p class="texto">In minim non adipisicing aute irure enim fugiat cupidatat qui magna do pariatur.</p>
+            <p class="texto">{{anuncio.1}}</p>
             {% if proyectoDetails.0.8 == False %}
             <div>
                 <form action="">
@@ -69,7 +71,10 @@
             </div>
             {% endif %}
         </div>
+        {% empty %}
+        {% endfor %}
     </div>
+    
 </div>
 </div>
 

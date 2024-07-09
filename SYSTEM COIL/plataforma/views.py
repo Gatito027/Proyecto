@@ -446,12 +446,18 @@ def ProyectoDetail(request, codigo):
         with connection.cursor() as cursor:
             cursor.callproc('BuscarProyectoByCodigo', [codigo])
             proyectoDetails = cursor.fetchall()
+            cursor.callproc('buscarProyectoPorCodigo', [codigo])
+            proyectoId = cursor.fetchone()[0]
+            cursor.callproc('obtener_anuncios', [proyectoId])
+            anuncios = cursor.fetchall()
             return render(request,'pages/Proyectos/ProyectoDetail.html',{
                 'enlace_activo': 'tablon',
                 'proyectoDetails': proyectoDetails,
                 'codigo': codigo,
                 'usuario' : usuario,
-                'layout' : layout})
+                'layout' : layout,
+                'proyectoId': proyectoId,
+                'anuncios': anuncios})
     else:
         return redirect('Error', comprobacion)
 
@@ -942,6 +948,46 @@ def ReactivarProyecto(request,proyecto,codigo):
             return redirect('Error', resultado)
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
+
+@login_required(login_url='Login')
+def PublicarComentario(request, proyecto, codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    comentario = request.POST.get('comentario')
+    try:
+        if tipo_usuario == "Alumno":
+            alumno = Alumno.objects.get(id_usuario_id=usuario.id)
+            id_alumno = alumno.id
+            with connection.cursor() as cursor:
+                cursor.callproc('AnuncioAlumno', [
+                    str(comentario),
+                    id_alumno,
+                    proyecto
+                ])
+                resultado = cursor.fetchone()[0]
+            if resultado == 'Agregado exitosamente':
+                return redirect('ProyectoDetail', codigo)
+            else:
+                return redirect('Error', resultado)
+        elif tipo_usuario == "Profesor":
+            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+            id_profesor = profesor.id
+            with connection.cursor() as cursor:
+                cursor.callproc('AnuncioProfesor', [
+                    str(comentario),
+                    id_profesor,
+                    proyecto
+                ])
+                resultado = cursor.fetchone()[0]
+            if resultado == 'Agregado exitosamente':
+                return redirect('ProyectoDetail', codigo)
+            else:
+                return redirect('Error', resultado)
+        else:
+            return redirect('Error', 'Datos no válidos')
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
+
 # def articulos(request):
 #     return render(request,'pages/articulos.html')
 
