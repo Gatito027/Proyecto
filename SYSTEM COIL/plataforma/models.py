@@ -125,6 +125,11 @@ class Anuncios_archivos(models.Model):
     fecha = models.DateField()
     id_anuncio= models.ForeignKey(Anuncios,on_delete=models.CASCADE)
 
+class Anuncios_links(models.Model):
+    path = models.TextField()
+    fecha = models.DateField()
+    id_anuncio= models.ForeignKey(Anuncios,on_delete=models.CASCADE)
+
 class Anuncios_comentarios(models.Model):
     comentario = models.TextField()
     fecha = models.DateField()

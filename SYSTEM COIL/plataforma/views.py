@@ -73,16 +73,12 @@ def ListaProyectos(request):
                 alumno = Alumno.objects.get(id_usuario_id=usuario.id)
                 id_alumno = alumno.id
                 with connection.cursor() as cursor:
-                    cursor.callproc('ListaProfesoresproyecto', [])
-                    listaProfesores = cursor.fetchall()
                     cursor.callproc('BuscarProyectos', [id_alumno])
                     proyectos = cursor.fetchall()
             elif tipo_usuario == "Profesor":
                 profesor = Profesor.objects.get(id_usuario_id=usuario.id)
                 id_profesor = profesor.id
                 with connection.cursor() as cursor:
-                    cursor.callproc('ListaProfesoresproyecto', [])
-                    listaProfesores = cursor.fetchall()
                     cursor.callproc('BuscarProyectoImpartido', [id_profesor])
                     proyectos = cursor.fetchall()
             else:
@@ -90,7 +86,6 @@ def ListaProyectos(request):
         except (Alumno.DoesNotExist, Profesor.DoesNotExist):
             return redirect('logout')
         return render(request, 'pages/Proyectos/ListaProyectos.html', {
-            'listaProfesores': listaProfesores,
             'proyectos': proyectos,
             'usuario' : usuario,
             'layout' : layout})
@@ -105,16 +100,12 @@ def ListaArchivoProyectos(request):
             alumno = Alumno.objects.get(id_usuario_id=usuario.id)
             id_alumno = alumno.id
             with connection.cursor() as cursor:
-                cursor.callproc('ListaProfesoresproyecto', [])
-                listaProfesores = cursor.fetchall()
                 cursor.callproc('BuscarProyectosArchivado', [id_alumno])
                 proyectos = cursor.fetchall()
         elif tipo_usuario == "Profesor":
             profesor = Profesor.objects.get(id_usuario_id=usuario.id)
             id_profesor = profesor.id
             with connection.cursor() as cursor:
-                cursor.callproc('ListaProfesoresproyecto', [])
-                listaProfesores = cursor.fetchall()
                 cursor.callproc('BuscarProyectoImpartidoArchivado', [id_profesor])
                 proyectos = cursor.fetchall()
         else:
@@ -123,7 +114,6 @@ def ListaArchivoProyectos(request):
         return redirect('logout')
     return render(request, 'pages/Proyectos/ListaProyectos.html', {
         'rol': tipo_usuario,
-        'listaProfesores': listaProfesores,
         'proyectos': proyectos,
         'usuario' : usuario,
         'layout' : layout})
@@ -730,6 +720,8 @@ def Login(request):
                 if usuario.rol.nombre == "Alumno":
                     if usuario.is_firstLogin == True:
                         return redirect('registro_alumno')
+                    else:
+                        return redirect('ListaProyectos')       
                 elif usuario.rol.nombre == "Profesor":
                         if usuario.is_firstLogin == True:
                             return redirect('registro_profesor')
@@ -824,6 +816,54 @@ def validate_credentials(request):
             'user_exists': user_exists,
             'credentials_valid': credentials_valid
         })
+
+def EditDatosProfesor(request, codigo):
+    usuario = request.user
+    layout = LlenarLayout(request)
+    if usuario.rol.nombre == "Alumno":
+        # Obtener el alumno asociado al usuario
+        alumno = get_object_or_404(Alumno, id_usuario_id=usuario.id)
+
+        with connection.cursor() as cursor:
+            # Llamar a la función para obtener el proyecto por código
+            cursor.callproc('buscarProyectoPorCodigo', [codigo])
+            proyectoCodigo = cursor.fetchone()[0]
+
+            # Llamar a la función para obtener los profesores del proyecto
+            cursor.callproc('BuscarProyectoProfesores', [proyectoCodigo])
+            profesores = cursor.fetchall()
+
+        context = {
+            'profesores': profesores,
+            'codigo': codigo,
+            'layout': layout,
+            'enlace_activo': 'active',
+        }
+        return render(request, 'pages/Proyectos/ProfesoresProyecto.html', context)
+    else:
+        # Obtener el profesor asociado al usuario
+        profesor = get_object_or_404(Profesor, id_usuario_id=usuario.id)
+
+        if request.method == 'POST':
+            form = ProfesorForm(request.POST, instance=profesor)
+            if form.is_valid():
+                form.save()
+                return redirect('EditDatosProfesor', codigo) 
+        else:
+            form = ProfesorForm(instance=profesor)
+
+        context = {
+            'form': form,
+            'profesor': profesor,
+            'codigo': codigo,
+            'enlace_activo': 'active',
+            'layout': layout
+        }
+        return render(request, 'pages/Proyectos/EditDatosProfesor.html', context)
+
+
+
+
 
 def Fase2(request):
     return render(request, 'pages/FasesCoil/fase2.html', {'enlace_activo': 'tareas','enlace_activo1': 'fase2'})

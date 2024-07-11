@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pwa',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -70,16 +71,6 @@ DATABASES = {
         'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
     }
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        "NAME": "tasksdb",
-#        "USER": "postgres",
-#        "PASSWORD": "mimiau",
-#        "HOST": "localhost",
-#        "PORT": "5432",
-#    }
-#}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

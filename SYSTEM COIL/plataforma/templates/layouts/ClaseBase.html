@@ -14,7 +14,7 @@
             <a class="nav-link {% if enlace_activo == 'coil' %}active{% endif %}" href="{% url 'IntroduccionCoil' codigo %}">Introducción</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if enlace_activo == 'profesor' %}active{% endif %}" href="{% url 'IntroduccionCoil' codigo %}">Presentación profesor</a>
+            <a class="nav-link {% if enlace_activo == 'active' %}active{% endif %}" href="{% url 'EditDatosProfesor' codigo %}">Presentación profesor</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if enlace_activo == 'tareas' %}active{% endif %}" href="{% url 'FasesCoil' codigo %}">Fases Coil</a>

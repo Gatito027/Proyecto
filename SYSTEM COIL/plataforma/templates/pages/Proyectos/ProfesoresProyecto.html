@@ -1,0 +1,25 @@
+{% extends 'layouts/baseAdmin.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+{% include "layouts/ClaseBase.html" %}
+<div class="container mt-5">
+    <h1 class="mb-4">Profesores Asociados al Proyecto</h1>
+    <div class="row">
+        {% for profesor in profesores %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2>{{ profesor.0 }} {{ profesor.1 }}</h2>
+                </div>
+                <div class="card-body">
+                    <h2>{{ profesor.3 }} {{ profesor.4 }}</h2>
+                    <h2>{{ profesor.5 }} {{ profesor.6 }}</h2>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

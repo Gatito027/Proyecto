@@ -39,7 +39,7 @@ urlpatterns = [
     path('save_other_university/', views.save_other_university, name='save_other_university'),
     path('registro_profesor/', views.RegistroProfesor, name='registro_profesor'),
     path('ProfesorDatosPersonales/', views.ProfesorDatosPersonales, name='ProfesorDatosPersonales'),
-    
+    path('EditDatosProfesor/<str:codigo>', views.EditDatosProfesor, name="EditDatosProfesor"),
     
     
     path('Validatecredentials/', views.validate_credentials, name='validate_credentials'),
