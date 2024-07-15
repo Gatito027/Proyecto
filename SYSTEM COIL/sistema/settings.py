@@ -148,3 +148,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'systempycoil@gmail.com'
 EMAIL_HOST_PASSWORD = 'k k y c p r t n t n o r t z a u'
+
+
+SESSION_COOKIE_AGE = 1800 # 1 hour (in seconds)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
