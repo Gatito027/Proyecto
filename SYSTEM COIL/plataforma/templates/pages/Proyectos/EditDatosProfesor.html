@@ -2,7 +2,7 @@
 {% load static %}
 {% load widget_tweaks %}
 {% block content %}
-{% include "layouts/ClaseBase.html" %}
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -54,11 +54,12 @@
     </style>
 </head>
 <body>
+    {% include "layouts/ClaseBase.html" %}
     <div class="container mt-5">
         <h1 class="mb-4">Datos del Profesor</h1>
         <div class="card">
-            <div class="card-header">
-                <h2>{{ profesor.nombre }} {{ profesor.apellidos }}</h2>
+            <div class="card-header titulo">
+                <h2 style="color: white;">{{ profesor.nombre }} {{ profesor.apellidos }}</h2>
             </div>
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" id="profesorForm">

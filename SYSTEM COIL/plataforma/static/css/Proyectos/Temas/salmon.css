@@ -31,7 +31,7 @@
 .nav-link:hover{
     color: #d13519;
 }
-.card:hover{
+.cardh:hover{
     background: #f0bdb5;
 }
 .nav-pills .nav-link.active {

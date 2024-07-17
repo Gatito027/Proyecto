@@ -892,6 +892,7 @@ def EditDatosProfesor(request, codigo):
                 'codigo': codigo,
                 'layout': layout,
                 'enlace_activo': 'active',
+                'proyectoDetails': proyectoDetails,
             }
             return render(request, 'pages/Proyectos/ProfesoresProyecto.html', context)
         else:
@@ -907,13 +908,16 @@ def EditDatosProfesor(request, codigo):
                 return redirect('EditDatosProfesor', codigo) 
         else:
             form = ProfesorForm(instance=profesor)
-
+        with connection.cursor() as cursor:
+            cursor.callproc('BuscarProyectoByCodigo', [codigo])
+            proyectoDetails = cursor.fetchall()
         context = {
             'form': form,
             'profesor': profesor,
             'codigo': codigo,
             'enlace_activo': 'active',
-            'layout': layout
+            'layout': layout,
+            'proyectoDetails': proyectoDetails
         }
         return render(request, 'pages/Proyectos/EditDatosProfesor.html', context)
 
