@@ -83,6 +83,7 @@ def LlenarLayout(request):
                 nombres= alumno.nombre
                 apellidos = alumno.apellidos
                 matricula = alumno.matricula_dni
+                usuarioLog= id_alumno
                 with connection.cursor() as cursor:
                     cursor.callproc('BuscarNombreProyectos', [id_alumno])
                     listaProyectos = cursor.fetchall()
@@ -93,6 +94,7 @@ def LlenarLayout(request):
                 apellidos = profesor.apellidos
                 matricula = profesor.idmex_dni
                 universidad = profesor.universidad_origen
+                usuarioLog = id_profesor
                 with connection.cursor() as cursor:
                     cursor.callproc('BuscarProyectoNombreImpartido', [id_profesor])
                     listaProyectos = cursor.fetchall()
@@ -108,7 +110,8 @@ def LlenarLayout(request):
             correo,
             matricula,
             universidad,
-            listaProyectos]
+            listaProyectos,
+            usuarioLog]
 
 @login_required(login_url='Login')
 def ListaProyectos(request):
@@ -1104,3 +1107,12 @@ def ComentarPublicacion(request, publicacion, codigo):
             return redirect('Error', 'Datos no válidos')
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
+
+@login_required(login_url='Login')
+def eliminarComentario(request,id_coment, codigo, tipo_usuario, id_usuario):
+    if tipo_usuario == 'Alumno':
+        
+        return
+    elif tipo_usuario == 'Profesor':
+        return
+    return
