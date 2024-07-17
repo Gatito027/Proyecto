@@ -94,10 +94,11 @@ class Profesor(models.Model):
     trayectoria_profesional = models.TextField(null=True, blank=True)
     descripcion = models.TextField(null=True, blank=True)
     gustos_personales = models.TextField(null=True, blank=True)
-    imagen = models.ImageField(upload_to='imagenes_profesores/', null=True, blank=True)
-
+    imagen = models.ImageField(upload_to='imagenes_profesores', null=True, blank=True)
     def __str__(self):
         return f"{self.nombre} {self.apellidos}"
+    
+    
     
 #*Cosas agregadas por Daniel
 class Proyectos(models.Model):
@@ -139,7 +140,6 @@ class Anuncios_comentarios(models.Model):
     id_profesor = models.ForeignKey(Profesor, null=True, on_delete=models.CASCADE)
     id_alumno = models.ForeignKey(Alumno, null=True, on_delete=models.CASCADE)
     id_anuncio= models.ForeignKey(Anuncios,on_delete=models.CASCADE)
-
 class Fases(models.Model):
     titulo = models.CharField(max_length=50)
     puntuacion = models.CharField(max_length=5)
