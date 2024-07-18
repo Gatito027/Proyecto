@@ -126,6 +126,25 @@
             reader.readAsDataURL(event.target.files[0]);
         });
     </script>
+
+    {% if messages %}
+    {% for m in messages %}
+        <script>
+            Swal.fire({
+                title: 'Éxito',
+                text: "{{ m }}",
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 5000, // Cerrar después de 5 segundos
+                allowOutsideClick: true, // Permitir clics fuera del SweetAlert
+            });
+        </script>
+    {% endfor %}
+{% endif %}
+
+
+
+
 </body>
 </html>
 {% endblock %}

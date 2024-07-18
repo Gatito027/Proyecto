@@ -60,6 +60,7 @@ def guardar_usuario(request):
             alumno.apellidos = apellidos
             alumno.matricula_dni = matricula
             alumno.save()
+            
         elif tipo_usuario == "Profesor":
             profesor = Profesor.objects.get(id_usuario_id=usuario.id)
             profesor.nombre = nombres
@@ -67,9 +68,10 @@ def guardar_usuario(request):
             profesor.idmex_dni = matricula
             profesor.save()
         
-        return redirect('ListaProyectos') 
+        messages.success(request, 'Datos guardados correctamente')
+        return redirect('editar_usuario')  # Redirige al mismo formulario para mostrar el mensaje
 
-    return redirect('editar_usuario')   
+    return redirect('editar_usuario')
 
 def LlenarLayout(request): 
         usuario = request.user
@@ -111,7 +113,7 @@ def LlenarLayout(request):
             matricula,
             universidad,
             listaProyectos,
-	    usuarioLog]
+            usuarioLog]
 
 @login_required(login_url='Login')
 def ListaProyectos(request):
@@ -268,7 +270,7 @@ def ComprobarCodigoUsuario(request,codigo):
             return 'Datos no válidos'
     except Exception as e:
         return e
-    return 'No se ha podido comprobar el usuario'
+    return 'Algo fallo'
 
 @login_required(login_url='Login')
 def UnirteProyecto(request):
@@ -345,6 +347,7 @@ def AgregarUsuarioProyecto(request,proyecto,codigo):
             return redirect('Error','Datos no validos')
     except Exception as e:
         return redirect('Error',e)
+    return redirect('Error','Algo fallo')
 
 @login_required(login_url='Login')
 def UnirteProyectoPage(request, codigo):
@@ -649,7 +652,7 @@ def RegistroProfesor(request):
 @login_required(login_url='Login')
 def ProfesorDatosPersonales(request):
     usuario = request.user
-    if usuario.rol.nombre != "Profesor" or usuario.is_firstRegister == False:
+    if usuario.rol.nombre != "Profesor" or not usuario.is_firstRegister:
         logout(request)
         return redirect('Login')
 
@@ -661,12 +664,13 @@ def ProfesorDatosPersonales(request):
             form.save()
             usuario.is_firstRegister = False
             usuario.save()
+            messages.success(request, "Datos ingresados correctamente")
             return redirect('ListaProyectos')
+
     else:
         form = ProfesorForm(instance=profesor)
 
     return render(request, 'pages/Registro/DatosProfesor.html', {'form': form})
-
 
 def Registro(request):
     if request.method == 'POST':
@@ -865,6 +869,9 @@ def validate_credentials(request):
             'credentials_valid': credentials_valid
         })
 
+
+
+@login_required(login_url='Login')
 def EditDatosProfesor(request, codigo):
     usuario = request.user
     layout = LlenarLayout(request)
@@ -885,7 +892,6 @@ def EditDatosProfesor(request, codigo):
                 # Llamar a la función para obtener los profesores del proyecto
                 cursor.callproc('BuscarProyectoProfesores', [proyectoCodigo])
                 profesores = cursor.fetchall()
-
             context = {
                 'profesores': profesores,
                 'codigo': codigo,
@@ -894,7 +900,6 @@ def EditDatosProfesor(request, codigo):
                 'proyectoDetails': proyectoDetails,
             }
             return render(request, 'pages/Proyectos/ProfesoresProyecto.html', context)
-        
         else:
             # Obtener el profesor asociado al usuario
             profesor = get_object_or_404(Profesor, id_usuario_id=usuario.id)
@@ -903,6 +908,7 @@ def EditDatosProfesor(request, codigo):
                 form = ProfesorForm(request.POST, request.FILES ,instance=profesor)
                 if form.is_valid():
                     form.save()
+                    messages.success(request, "Datos actualizados correctamente")
                     return redirect('EditDatosProfesor', codigo) 
             else:
                 form = ProfesorForm(instance=profesor)
@@ -919,7 +925,7 @@ def EditDatosProfesor(request, codigo):
             }
             return render(request, 'pages/Proyectos/EditDatosProfesor.html', context)
     else:
-        return redirect('Error', comprobacion)
+            return redirect('Error', comprobacion)
 
 def Error(request,error):
     layout = LlenarLayout(request)
@@ -1110,6 +1116,15 @@ def ComentarPublicacion(request, publicacion, codigo):
             return redirect('Error', 'Datos no válidos')
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
+
+@login_required(login_url='Login')
+def eliminarComentario(request,id_coment, codigo, tipo_usuario, id_usuario):
+    if tipo_usuario == 'Alumno':
+        
+        return
+    elif tipo_usuario == 'Profesor':
+        return
+    return
 
 @login_required(login_url='Login')
 def eliminarComentario(request,id_coment, codigo):
