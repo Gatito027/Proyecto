@@ -268,7 +268,7 @@ def ComprobarCodigoUsuario(request,codigo):
             return 'Datos no válidos'
     except Exception as e:
         return e
-    return 'Algo fallo'
+    return 'No se ha podido comprobar el usuario'
 
 @login_required(login_url='Login')
 def UnirteProyecto(request):
@@ -345,7 +345,6 @@ def AgregarUsuarioProyecto(request,proyecto,codigo):
             return redirect('Error','Datos no validos')
     except Exception as e:
         return redirect('Error',e)
-    return redirect('Error','Algo fallo')
 
 @login_required(login_url='Login')
 def UnirteProyectoPage(request, codigo):
@@ -870,12 +869,12 @@ def EditDatosProfesor(request, codigo):
     usuario = request.user
     layout = LlenarLayout(request)
     comprobacion = ComprobarCodigoUsuario(request,codigo)
-    if usuario.rol.nombre == "Alumno":
-        # Obtener el alumno asociado al usuario
-        alumno = get_object_or_404(Alumno, id_usuario_id=usuario.id)
-        if comprobacion == 'No inscrito':
-            return redirect('EntrarProyecto', codigo)
-        elif comprobacion == 'Inscrito':
+    if comprobacion == 'No inscrito':
+        return redirect('EntrarProyecto', codigo)
+    elif comprobacion == 'Inscrito':
+        if usuario.rol.nombre == "Alumno":
+            # Obtener el alumno asociado al usuario
+            alumno = get_object_or_404(Alumno, id_usuario_id=usuario.id)
             with connection.cursor() as cursor:
                 cursor.callproc('BuscarProyectoByCodigo', [codigo])
                 proyectoDetails = cursor.fetchall()
@@ -895,31 +894,32 @@ def EditDatosProfesor(request, codigo):
                 'proyectoDetails': proyectoDetails,
             }
             return render(request, 'pages/Proyectos/ProfesoresProyecto.html', context)
+        
         else:
-            return redirect('Error', comprobacion)
-    else:
-        # Obtener el profesor asociado al usuario
-        profesor = get_object_or_404(Profesor, id_usuario_id=usuario.id)
+            # Obtener el profesor asociado al usuario
+            profesor = get_object_or_404(Profesor, id_usuario_id=usuario.id)
 
-        if request.method == 'POST':
-            form = ProfesorForm(request.POST, request.FILES ,instance=profesor)
-            if form.is_valid():
-                form.save()
-                return redirect('EditDatosProfesor', codigo) 
-        else:
-            form = ProfesorForm(instance=profesor)
-        with connection.cursor() as cursor:
-            cursor.callproc('BuscarProyectoByCodigo', [codigo])
-            proyectoDetails = cursor.fetchall()
-        context = {
-            'form': form,
-            'profesor': profesor,
-            'codigo': codigo,
-            'enlace_activo': 'active',
-            'layout': layout,
-            'proyectoDetails': proyectoDetails
-        }
-        return render(request, 'pages/Proyectos/EditDatosProfesor.html', context)
+            if request.method == 'POST':
+                form = ProfesorForm(request.POST, request.FILES ,instance=profesor)
+                if form.is_valid():
+                    form.save()
+                    return redirect('EditDatosProfesor', codigo) 
+            else:
+                form = ProfesorForm(instance=profesor)
+            with connection.cursor() as cursor:
+                cursor.callproc('BuscarProyectoByCodigo', [codigo])
+                proyectoDetails = cursor.fetchall()
+            context = {
+                'form': form,
+                'profesor': profesor,
+                'codigo': codigo,
+                'enlace_activo': 'active',
+                'layout': layout,
+                'proyectoDetails': proyectoDetails
+            }
+            return render(request, 'pages/Proyectos/EditDatosProfesor.html', context)
+    else:
+        return redirect('Error', comprobacion)
 
 def Error(request,error):
     layout = LlenarLayout(request)
@@ -1112,10 +1112,71 @@ def ComentarPublicacion(request, publicacion, codigo):
         return redirect('logout')
 
 @login_required(login_url='Login')
-def eliminarComentario(request,id_coment, codigo, tipo_usuario, id_usuario):
-    if tipo_usuario == 'Alumno':
-        
-        return
-    elif tipo_usuario == 'Profesor':
-        return
-    return
+def eliminarComentario(request,id_coment, codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    try:
+        if tipo_usuario == 'Alumno':
+            alumno = Alumno.objects.get(id_usuario_id=usuario.id)
+            id_alumno = alumno.id
+            with connection.cursor() as cursor:
+                cursor.callproc('BuscarAlumnoComentariobyID', [id_coment])
+                r = cursor.fetchone()[0]
+                if id_alumno == r:
+                    cursor.callproc('EliminarComentario', [id_coment])
+                    resultado = cursor.fetchone()[0]
+                    if resultado == 'Eliminar exitosamente':
+                        return redirect('ProyectoDetail', codigo)
+                    else:
+                        return redirect('Error', resultado)
+                else:
+                    return redirect('Error', 'Tu usuario no coincide con el comentario')
+        elif tipo_usuario == 'Profesor':
+            with connection.cursor() as cursor:
+                cursor.callproc('EliminarComentario', [id_coment])
+                resultado = cursor.fetchone()[0]
+                if resultado == 'Eliminar exitosamente':
+                    return redirect('ProyectoDetail', codigo)
+                else:
+                    return redirect('Error', resultado)
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
+
+@login_required(login_url='Login')
+def editarComentario(request,id_coment, codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    comentario = request.POST.get('comentariopost')
+    try:
+        if tipo_usuario == 'Alumno':
+            alumno = Alumno.objects.get(id_usuario_id=usuario.id)
+            id_alumno = alumno.id
+            with connection.cursor() as cursor:
+                cursor.callproc('BuscarAlumnoComentariobyID', [id_coment])
+                r = cursor.fetchone()[0]
+                if id_alumno == r:
+                    cursor.callproc('EditarComentario', [id_coment, str(comentario)])
+                    resultado = cursor.fetchone()[0]
+                    if resultado == 'Editado exitosamente':
+                        return redirect('ProyectoDetail', codigo)
+                    else:
+                        return redirect('Error', resultado)
+                else:
+                    return redirect('Error', 'Tu usuario no coincide con el comentario')
+        elif tipo_usuario == 'Profesor':
+            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+            id_profesor = profesor.id
+            with connection.cursor() as cursor:
+                cursor.callproc('BuscarProfesorComentariobyID', [id_coment])
+                r = cursor.fetchone()[0]
+                if id_profesor == r:
+                    cursor.callproc('EditarComentario', [id_coment, str(comentario)])
+                    resultado = cursor.fetchone()[0]
+                    if resultado == 'Editado exitosamente':
+                        return redirect('ProyectoDetail', codigo)
+                    else:
+                        return redirect('Error', resultado)
+                else:
+                    return redirect('Error', 'Tu usuario no coincide con el comentario')
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')

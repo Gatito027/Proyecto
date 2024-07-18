@@ -1,4 +1,5 @@
 {% extends 'layouts/baseAdmin.html' %} {% load static %} {% block content %}
+
 <link rel="stylesheet" href="{% static 'css/Proyectos/ProyectoDetail.css' %}" />
 {% include "layouts/ClaseBase.html" %}
 <div class="titulo">
@@ -123,13 +124,14 @@
               {{a.3}}{% if a.2 != a.3 %} (Editado){% endif %}
             </div>
           </div>
+          {% include "pages/Modals/EditarComentarioAnuncio.html" %}
           {% if layout.0 == "Alumno" and a.7 == layout.8 and proyectoDetails.0.8 == False %}
-          <div class="p-2 ms-auto comentarioConfig"><i class="bi bi-pencil"></i> <i class="bi bi-trash"></i></div>
+          <div class="p-2 ms-auto comentarioConfig"><a href="" data-bs-toggle="modal" data-bs-target="#Comentario{{a.0}}" title="Editar"><i class="bi bi-pencil"></i></a> <a href="{% url 'eliminarComentario' a.0 codigo %}" title="Eliminar"><i class="bi bi-trash"></i></a></div>
           {% elif layout.0 == "Profesor" and proyectoDetails.0.8 == False %}
           <div class="p-2 ms-auto comentarioConfig"> 
             {% if a.8 == layout.8 %}
-            <i class="bi bi-pencil"></i>
-          {% endif %} <i class="bi bi-trash"></i></div>{% endif %}
+            <a href="" data-bs-toggle="modal" data-bs-target="#Comentario{{a.0}}" title="Editar"><i class="bi bi-pencil"></i></a>
+          {% endif %} <a href="{% url 'eliminarComentario' a.0 codigo %}" title="Eliminar"><i class="bi bi-trash"></i></a></div>{% endif %}
         </div>
         
         <p class="texto">{{a.1}}</p>
