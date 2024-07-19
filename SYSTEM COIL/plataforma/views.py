@@ -629,7 +629,6 @@ def RegistroAlumno(request):
 def RegistroProfesor(request):
     usuario = request.user
     
-
     if usuario.rol.nombre != "Profesor" or usuario.is_firstLogin == False:
         logout(request)
         return redirect('Login')
@@ -664,13 +663,12 @@ def ProfesorDatosPersonales(request):
             form.save()
             usuario.is_firstRegister = False
             usuario.save()
-            messages.success(request, "Datos ingresados correctamente")
-            return redirect('ListaProyectos')
+            return JsonResponse({'success': True})
 
     else:
         form = ProfesorForm(instance=profesor)
 
-    return render(request, 'pages/Registro/DatosProfesor.html', {'form': form})
+    return render(request, 'pages/Registro/DatosProfesor.html', {'form': form, 'profesor_nombre': profesor.nombre})
 
 def Registro(request):
     if request.method == 'POST':
