@@ -28,3 +28,10 @@
 .nav-link{
     color: teal;
 }
+.boton_modales{
+    border-color: teal;
+    color: teal;
+}
+.boton_modales:hover {
+    background-color: teal;
+}

@@ -42,3 +42,10 @@
     background-color: #2d1e1b; /* Cambia este valor al color deseado */
     color: #fff; /* Cambia este valor al color de texto deseado */
 }
+.boton_modales{
+    border-color: #45322e;
+    color: #45322e;
+}
+.boton_modales:hover {
+    background-color: #45322e;
+}

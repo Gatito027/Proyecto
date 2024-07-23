@@ -42,3 +42,10 @@
     background-color: rgb(75, 1, 75); /* Cambia este valor al color deseado */
     color: #fff; /* Cambia este valor al color de texto deseado */
 }
+.boton_modales{
+    border-color: purple;
+    color: purple;
+}
+.boton_modales:hover {
+    background-color: purple;
+}

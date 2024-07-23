@@ -1,32 +1,32 @@
 .titulo{
-    background-color: #51d1f6;
+    background-color: #36A0ED;
 }
 .boton_unirse{
-    background-color: #51d1f6;
+    background-color: #36A0ED;
 }
 .boton_unirse:hover{
     background-color: #29b4dc;
 }
 .icono{
-    background-color: #51d1f6;
+    background-color: #36A0ED;
 }
 .boton_enviar{
-    background-color: #51d1f6;
+    background-color: #36A0ED;
 }
 .boton_enviar:hover{
     background-color: #29b4dc;
 }
 .boton{
-    background-color: #51d1f6;
+    background-color: #36A0ED;
 }
 .boton:hover{
     background-color: #29b4dc;
 }
 .tema{
-    color: #51d1f6;
+    color: #36A0ED;
 }
 .nav-link{
-    color: #51d1f6;
+    color: #36A0ED;
 }
 .nav-link:hover{
     color: #29b4dc;
@@ -35,10 +35,17 @@
     background: #cef4ff;
 }
 .nav-pills .nav-link.active {
-    background-color: #51d1f6; /* Cambia este valor al color deseado */
+    background-color: #36A0ED; /* Cambia este valor al color deseado */
     color: #fff; /* Cambia este valor al color de texto deseado */
 }
 .nav-pills .nav-link.active:hover {
     background-color: #29b4dc; /* Cambia este valor al color deseado */
     color: #fff; /* Cambia este valor al color de texto deseado */
+}
+.boton_modales{
+    border-color: #36A0ED;
+    color: #36A0ED;
+}
+.boton_modales:hover {
+    background-color: #36A0ED;
 }

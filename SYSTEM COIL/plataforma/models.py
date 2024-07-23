@@ -95,9 +95,8 @@ class Profesor(models.Model):
     descripcion = models.TextField(null=True, blank=True)
     gustos_personales = models.TextField(null=True, blank=True)
     imagen = models.ImageField(upload_to='imagenes_profesores', null=True, blank=True)
-    def __str__(self):
+    def _str_(self):
         return f"{self.nombre} {self.apellidos}"
-    
     
     
 #*Cosas agregadas por Daniel
@@ -157,13 +156,20 @@ class Alumnos_proyecto(models.Model):
 
 #!Falta tareas, materiales y presentación profesor
 #*Cosas de Mateo
-
 class Materiales(models.Model):
-    tema = models.CharField(max_length=200)
     descripcion = models.TextField()
     fecha = models.DateField()
     id_fase = models.BigIntegerField()
+    titulo = models.CharField(max_length=100)
     id_profesor = models.IntegerField()
     
     def _str_(self):
         return self.titulo
+    
+class Materiales_Comentarios(models.Model):
+    comentario = models.TextField()
+    fecha = models.DateTimeField()
+    fecha_edit = models.DateTimeField()
+    id_profesor = models.ForeignKey(Profesor, null=True, on_delete=models.CASCADE)
+    id_alumno = models.ForeignKey(Alumno, null=True, on_delete=models.CASCADE)
+    id_material= models.ForeignKey(Materiales,on_delete=models.CASCADE)
