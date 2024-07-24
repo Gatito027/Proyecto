@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
@@ -95,8 +96,22 @@ class Profesor(models.Model):
     descripcion = models.TextField(null=True, blank=True)
     gustos_personales = models.TextField(null=True, blank=True)
     imagen = models.ImageField(upload_to='imagenes_profesores', null=True, blank=True)
+
     def _str_(self):
         return f"{self.nombre} {self.apellidos}"
+
+    def save(self, *args, **kwargs):
+        # Check if there is an existing image before saving a new one
+        try:
+            this = Profesor.objects.get(id=self.id)
+            if this.imagen != self.imagen:
+                if this.imagen:  # Check if an image exists
+                    if os.path.isfile(this.imagen.path):
+                        os.remove(this.imagen.path)
+        except Profesor.DoesNotExist:
+            pass  # This is a new object, no need to check for an old image
+
+        super(Profesor, self).save(*args, **kwargs)
     
     
 #*Cosas agregadas por Daniel
@@ -122,7 +137,7 @@ class Anuncios(models.Model):
     id_proyecto = models.ForeignKey(Proyectos, on_delete=models.CASCADE)
 
 class Anuncios_archivos(models.Model):
-    path = models.TextField()
+    path = models.FileField(upload_to='archivos_foro', null=True, blank=True)
     fecha = models.DateField()
     id_anuncio= models.ForeignKey(Anuncios,on_delete=models.CASCADE)
 
@@ -160,7 +175,7 @@ class Materiales(models.Model):
     descripcion = models.TextField()
     fecha = models.DateField()
     id_fase = models.BigIntegerField()
-    titulo = models.CharField(max_length=100)
+    tema = models.CharField(max_length=100)
     id_profesor = models.IntegerField()
     
     def _str_(self):
@@ -173,3 +188,9 @@ class Materiales_Comentarios(models.Model):
     id_profesor = models.ForeignKey(Profesor, null=True, on_delete=models.CASCADE)
     id_alumno = models.ForeignKey(Alumno, null=True, on_delete=models.CASCADE)
     id_material= models.ForeignKey(Materiales,on_delete=models.CASCADE)
+
+class Materiales_enlaces(models.Model):
+    titulo = models.TextField()
+    path = models.TextField()
+    fecha = models.DateField()
+    id_anuncio= models.ForeignKey(Materiales,on_delete=models.CASCADE)

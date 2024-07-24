@@ -40,10 +40,11 @@
   <div class="col mt-2">
     {% if proyectoDetails.0.8 == False %}
     <div>
-      <form
+      <form 
         action="{% url 'PublicarComentario' proyectoId codigo %}"
         method="post"
         onsubmit="disableButtons()"
+        enctype="multipart/form-data"
       >
         {% csrf_token %}
         <div class="input-group mb-1 input-group-lg">
@@ -100,8 +101,18 @@
         {% for enlace in e.1 %}
         {% include "pages/Modals/EnlacesArchivosModal.html" %}
         {% if enlace.4 == anuncio.0 %}
-          <button type="button" class="boton_modales" data-bs-toggle="modal" data-bs-target="#Enlaces{{ enlace.0 }}">
+          <button type="button" class="boton_modales mt-1 mb-1" data-bs-toggle="modal" data-bs-target="#Enlaces{{ enlace.0 }}">
             <i class="bi bi-link-45deg"></i> {{ enlace.1 }}
+          </button>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+        {% for documents in archivos %}
+        {% for archivo in documents.1 %}
+        {% include "pages/Modals/verDocumentosModal.html" %}
+        {% if archivo.4 == anuncio.0 %}
+          <button type="button" class="boton_modales mt-1 mb-1" data-bs-toggle="modal" data-bs-target="#Archivos{{ archivo.0 }}">
+            <i class="bi bi-file-earmark-medical-fill"></i> {{ archivo.1 }}
           </button>
         {% endif %}
         {% endfor %}

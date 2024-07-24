@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from .forms import *
 from django.contrib.auth.decorators import login_required
-from .models import Usuario, Catalogo, Alumno, Profesor, Rol
+from .models import Usuario, Catalogo, Alumno, Profesor, Rol, Anuncios_archivos
 import json
 from django.contrib  import messages
 from datetime import datetime
@@ -16,7 +16,7 @@ from django.views.generic.edit import FormView
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.template.loader import render_to_string
 # Create your views here.
 def index(request):
@@ -505,6 +505,12 @@ def ProyectoDetail(request, codigo):
             proyectoId = cursor.fetchone()[0]
             cursor.callproc('obtener_anuncios', [proyectoId])
             anuncios = cursor.fetchall()
+            archivos_dict = {}
+            for anuncio in anuncios:
+                cursor.callproc('verArchivosAnuncio', [anuncio[0]])
+                archivos = cursor.fetchall()
+                archivos_dict[anuncio[0]] = archivos
+            archivos_list = [(anuncio_id, archivos) for anuncio_id, archivos in archivos_dict.items()]
             enlaces_dict = {}
             for anuncio in anuncios:
                 cursor.callproc('verEnlacesAnuncios', [anuncio[0]])
@@ -526,7 +532,8 @@ def ProyectoDetail(request, codigo):
                 'proyectoId': proyectoId,
                 'anuncios': anuncios,
                 'comentarios': comentarios_list,
-                'enlaces': enlaces_list})
+                'enlaces': enlaces_list,
+                'archivos':archivos_list})
     else:
         return redirect('Error', comprobacion)
 
@@ -703,21 +710,28 @@ def Registro(request):
             # Generar el código de verificación
             codigo_verificacion = get_random_string(6, allowed_chars='0123456789')
 
-            # Enviar el correo de verificación
+            # Construir la URL de verificación
+            verification_url = request.build_absolute_uri(reverse('verify_code'))
+
+            # Enviar el correo de verificación con el enlace
+            mensaje = (
+                f'Tu código de verificación es: {codigo_verificacion}.\n'
+                f'Para verificar tu cuenta, por favor sigue este enlace: {verification_url}'
+            )
             send_mail(
                 'Código de verificación',
-                f'Tu código de verificación es: {codigo_verificacion}',
+                mensaje,
                 'from@example.com',
                 [form.cleaned_data['correo_institucional']],
                 fail_silently=False,
             )
-            
+
             # Guardar el código de verificación en la sesión
             request.session['codigo_verificacion'] = codigo_verificacion
             request.session['correo_institucional'] = form.cleaned_data['correo_institucional']
 
-            messages.success(request, "Se envio un codigo para la verificacion del correo")
-            # return redirect('verify_code')  # Redirigir a la vista de verificación de código
+            messages.success(request, "Se envio un codigo para la verificacion del correo, sera reedirigido a una pagina para verificar tu codigo")
+            # # Redirigir a la vista de verificación de código
     else:
         form = RegistroForm()
 
@@ -750,12 +764,27 @@ def verify_code(request):
 
                     usuario.save()  # Guardar el usuario con el correo institucional
 
-                    messages.success(request, "Codigo correcto, Usuario registrado correctamente")
+                    # Enviar correo de bienvenida
+                    url_sistema = request.build_absolute_uri(reverse('Login'))  # Ajusta 'home' al nombre de tu vista principal
+                    mensaje_bienvenida = (
+                        f'Bienvenido al sistema, {usuario.nombre_usuario}.\n\n'
+                        f'Puedes acceder al sistema utilizando el siguiente enlace: {url_sistema}\n\n'
+                        'Gracias por unirte a nosotros.'
+                    )
+                    send_mail(
+                        'Bienvenida al Sistema',
+                        mensaje_bienvenida,
+                        'from@example.com',
+                        [usuario.correo_institucional],
+                        fail_silently=False,
+                    )
+
+                    messages.success(request, "Código correcto, Usuario registrado correctamente. Serás redirigido a una página para iniciar sesión.")
                     del request.session['registro_form_data']
                     del request.session['codigo_verificacion']
                     del request.session['correo_institucional']
 
-                    # return redirect('ListaProyectos')  # Redirigir a la página deseada después del registro
+                    #return redirect('Login')  # Redirigir a la página deseada después del registro
 
             else:
                 form.add_error('code', 'Código de verificación incorrecto.')
@@ -1051,6 +1080,8 @@ def ReactivarProyecto(request,proyecto,codigo):
             return redirect('Error', resultado)
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
+    
+
 
 @login_required(login_url='Login')
 def PublicarComentario(request, proyecto, codigo):
@@ -1071,7 +1102,26 @@ def PublicarComentario(request, proyecto, codigo):
                     proyecto
                 ])
                 anucio_id = cursor.fetchone()[0]
-                if anucio_id != 'Error no se publico el anuncio':
+                if anucio_id != 'Error no se publico el anuncio' :
+                    if titulos:
+                        for titulo, path in combinados:
+                            cursor.callproc('enlacesAnuncio', [
+                                str(titulo),
+                                str(path),
+                                anucio_id
+                            ])
+                    if request.method == 'POST':
+                        if 'files' in request.FILES:
+                            files = request.FILES.getlist('files')
+                            for uploaded_file in files:
+                                # Guardar cada archivo en el modelo
+                                anuncio_archivo = Anuncios_archivos(
+                                    path=uploaded_file,
+                                    fecha=datetime.now().date(),
+                                    id_anuncio_id=anucio_id
+                                )
+                                anuncio_archivo.save()
+                            print('Archivo subido correctamente')
                     return redirect('ProyectoDetail', codigo)
                 else:
                     return redirect('Error', anucio_id)
@@ -1085,18 +1135,29 @@ def PublicarComentario(request, proyecto, codigo):
                     proyecto
                 ])
                 anucio_id = cursor.fetchone()[0]
-                if anucio_id != 'Error no se publico el anuncio' and not titulos:
+                if anucio_id != 'Error no se publico el anuncio' :
+                    if titulos:
+                        for titulo, path in combinados:
+                            cursor.callproc('enlacesAnuncio', [
+                                str(titulo),
+                                str(path),
+                                anucio_id
+                            ])
+                    if request.method == 'POST':
+                        if 'files' in request.FILES:
+                            files = request.FILES.getlist('files')
+                            for uploaded_file in files:
+                                # Guardar cada archivo en el modelo
+                                anuncio_archivo = Anuncios_archivos(
+                                    path=uploaded_file,
+                                    fecha=datetime.now().date(),
+                                    id_anuncio_id=anucio_id
+                                )
+                                anuncio_archivo.save()
+                            print('Archivo subido correctamente')
                     return redirect('ProyectoDetail', codigo)
-                elif anucio_id == 'Error no se publico el anuncio':
-                    return redirect('Error', anucio_id)
                 else:
-                    for titulo, path in combinados:
-                        cursor.callproc('enlacesAnuncio', [
-                            str(titulo),
-                            str(path),
-                            anucio_id
-                        ])
-                    return redirect('ProyectoDetail', codigo)
+                    return redirect('Error', anucio_id)
         else:
             return redirect('Error', 'Datos no válidos')
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
