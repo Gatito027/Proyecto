@@ -1,0 +1,86 @@
+{% extends 'layouts/baseAdmin.html' %}
+{% block content %}
+{% load static %}
+
+
+<div class="container-fluid">
+
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <!-- Sidebar items here -->
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2 text-primary"><strong>Tema:</strong> {{ material.3 }}</h1>
+                <button class="btn btn-dark" onclick="window.history.back();">
+                    Volver
+                  </button>            
+                </div>
+
+            <div class="mb-3">
+                <ul class="list-group shadow-lg">
+                    <li class="list-group-item bg-light text-dark">{{ material.1 }} {{ material.2 }} • {{ material.5 }}</li>
+                </ul>
+            </div>
+
+            {% if material %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card mb-4 shadow-lg border-primary">
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <li class="list-group-item bg-light text-dark">{{ material.4 }}</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h4 class="text-success">Comentarios Privados</h4>
+                        <h6 class="text-muted"><u>Agrega un comentario a {{ material.1 }} {{ material.2 }}</u></h6>
+                    </div>
+
+                    <br>
+                    <h4 class="text-primary">Comentarios de la Clase</h4>
+                    <form action="{% url 'MaterialComentarios' material.0 %}" method="post" onsubmit="disableButtons()">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control px-2 shadow-sm" placeholder="Comenta..." name="comentar" required />
+                            <button class="btn btn-primary shadow-sm submitBtn" type="submit">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 0 24 24" width="30" fill="#FFFFFF">
+                                    <path d="M2 2v20l20-10L2 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                    
+
+                    {% for comentario in mostrar_comentarios %}
+                    <div class="card mb-3 shadow-lg border-secondary">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">{{ comentario.4 }} {{ comentario.5 }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ comentario.2 }}</h6>
+                            <p class="card-text">{{ comentario.1 }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-warning" role="alert">
+                No se encontraron detalles del material.
+            </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+
+<script src="{% static 'vendor/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'javascripts/Actividades/MultiEnvio.js' %}"></script>
+{% endblock %}

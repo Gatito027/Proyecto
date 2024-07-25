@@ -1,0 +1,35 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/FasesCoil/fasesBase.css' %}">
+<link rel="stylesheet" href="{% static 'vendor/bootstrap-5.3.3-dist/css/bootstrap.min.css' %}">
+{% include "layouts/ClaseBase.html" %}
+{% include "pages/Modals/CrearActividad.html" %}
+{% include "pages/Modals/CrearMaterial.html" %}
+<h1 class="titulo">FASES COIL</h1>
+<ul class="nav nav-pills justify-content-center">
+    <li class="nav-item">
+        <a class="nav-link {% if enlace_activo1 == 'fases' %}active color{% endif %}" href="{% url 'FasesCoil' codigo %}">
+            <i class="bi bi-house-door-fill"></i>
+        </a>
+    </li>
+    {% for fase in fases %}
+    <li class="nav-item">
+        <a class="nav-link {% if enlace_activo1 == fase.0 %}active{% endif %}" href="{% url 'Fase' codigo fase.0 %}">
+            {{ fase.1 }}
+        </a>
+    </li>
+    {% endfor %}
+    {% if enlace_activo1 != 'fases' and proyectoDetails.0.8 == False and layout.0 == "Profesor" %}
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="dropdownOpciones" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d     ="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="dropdownOpciones">
+            <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#crearTarea" data-bs-toggle="tooltip" data-bs-placement="right" title="Crear nueva actividad"><i class="bi bi-journal-check"></i> Actividad</button></li>
+            <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#crearMaterial2" data-bs-toggle="tooltip" data-bs-placement="right" title="Crear nuevo material"><i class="bi bi-lightbulb"></i> Material</button></li>
+        </ul>
+    </li>
+    {% endif %}
+    <script src="{% static 'vendor/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js' %}"></script>
+</ul>
