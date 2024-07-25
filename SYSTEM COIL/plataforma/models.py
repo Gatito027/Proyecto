@@ -1,7 +1,6 @@
-import os
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-
+import os
 
 
 class Rol(models.Model):
@@ -97,7 +96,7 @@ class Profesor(models.Model):
     gustos_personales = models.TextField(null=True, blank=True)
     imagen = models.ImageField(upload_to='imagenes_profesores', null=True, blank=True)
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.nombre} {self.apellidos}"
 
     def save(self, *args, **kwargs):
@@ -112,7 +111,6 @@ class Profesor(models.Model):
             pass  # This is a new object, no need to check for an old image
 
         super(Profesor, self).save(*args, **kwargs)
-    
     
 #*Cosas agregadas por Daniel
 class Proyectos(models.Model):

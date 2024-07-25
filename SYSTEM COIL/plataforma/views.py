@@ -16,7 +16,7 @@ from django.views.generic.edit import FormView
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.template.loader import render_to_string
 # Create your views here.
 def index(request):
@@ -736,7 +736,6 @@ def Registro(request):
         form = RegistroForm()
 
     return render(request, 'pages/Registro/Registro.html', {'form': form})
-
 def verify_code(request):
     if request.method == 'POST':
         form = VerificationCodeForm(request.POST)
@@ -969,6 +968,8 @@ def EditDatosProfesor(request, codigo):
             return render(request, 'pages/Proyectos/EditDatosProfesor.html', context)
     else:
         return redirect('Error', comprobacion)
+
+
 def Error(request,error):
     layout = LlenarLayout(request)
     return render(request, 'pages/error.html',{'error':error,'layout':layout})
@@ -1080,8 +1081,6 @@ def ReactivarProyecto(request,proyecto,codigo):
             return redirect('Error', resultado)
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
-    
-
 
 @login_required(login_url='Login')
 def PublicarComentario(request, proyecto, codigo):
