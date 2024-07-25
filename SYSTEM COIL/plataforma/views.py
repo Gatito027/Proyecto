@@ -1350,3 +1350,34 @@ def MaterialComentarios(request, id_material):
             return redirect('Error', 'Datos no válidos')
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
+    
+@login_required(login_url='Login')
+def eliminarAnuncio(request,id_anuncio, codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    try:
+        if tipo_usuario == 'Alumno':
+            alumno = Alumno.objects.get(id_usuario_id=usuario.id)
+            id_alumno = alumno.id
+            with connection.cursor() as cursor:
+                cursor.callproc('BuscarAlumnoComentariobyID', [id_anuncio])
+                r = cursor.fetchone()[0]
+                if id_alumno == r:
+                    cursor.callproc('EliminarAnuncio', [id_anuncio])
+                    resultado = cursor.fetchone()[0]
+                    if resultado == 'Eliminado exitosamente':
+                        return redirect('ProyectoDetail', codigo)
+                    else:
+                        return redirect('Error', resultado)
+                else:
+                    return redirect('Error', 'Tu usuario no coincide con el comentario')
+        elif tipo_usuario == 'Profesor':
+            with connection.cursor() as cursor:
+                cursor.callproc('EliminarAnuncio', [id_anuncio])
+                resultado = cursor.fetchone()[0]
+                if resultado == 'Eliminado exitosamente':
+                    return redirect('ProyectoDetail', codigo)
+                else:
+                    return redirect('Error', resultado)
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
