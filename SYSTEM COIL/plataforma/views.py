@@ -24,7 +24,7 @@ def index(request):
     return redirect('Login')
 
 @csrf_protect
-@login_required(login_url='Login') 
+@login_required(login_url='Login')
 def EditarUsuario(request):
     usuario = request.user
     tipo_usuario = usuario.rol.nombre
@@ -46,7 +46,6 @@ def EditarUsuario(request):
         'tipo_usuario':tipo_usuario
     })
 
-@csrf_protect
 @login_required(login_url='Login')
 def guardar_usuario(request):
     if request.method == 'POST':
@@ -71,7 +70,7 @@ def guardar_usuario(request):
             profesor.idmex_dni = matricula
             profesor.save()
         
-        messages.success(request, 'Datos guardados correctamente')
+        messages.success(request, 'Datos guardados correctamente.')
         return redirect('editar_usuario')  # Redirige al mismo formulario para mostrar el mensaje
 
     return redirect('editar_usuario')
@@ -117,7 +116,6 @@ def LlenarLayout(request):
             universidad,
             listaProyectos,
             usuarioLog]
-
 @csrf_protect
 @login_required(login_url='Login')
 def ListaProyectos(request):
@@ -149,7 +147,6 @@ def ListaProyectos(request):
             'proyectos': proyectos,
             'usuario' : usuario,
             'layout' : layout})
-
 @csrf_protect
 @login_required(login_url='Login')
 def ListaArchivoProyectos(request):
@@ -178,7 +175,6 @@ def ListaArchivoProyectos(request):
         'proyectos': proyectos,
         'usuario' : usuario,
         'layout' : layout})
-
 def generar_codigo_unico():
     while True:
         codigo = random.randint(-999999999, 999999999)
@@ -188,7 +184,6 @@ def generar_codigo_unico():
             codigos_existentes = {codigo_clase[0] for codigo_clase in codigos_clase}
             if codigo not in codigos_existentes:
                 return codigo
-
 @csrf_protect
 @login_required(login_url='Login')
 def crearProyecto(request):
@@ -229,7 +224,6 @@ def crearProyecto(request):
             return redirect('Error', resultado)
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
-
 def ComprobarCodigoUsuario(request,codigo):
     usuario = request.user
     tipo_usuario = usuario.rol.nombre
@@ -277,7 +271,6 @@ def ComprobarCodigoUsuario(request,codigo):
     except Exception as e:
         return e
     return 'Algo fallo'
-
 @csrf_protect
 @login_required(login_url='Login')
 def UnirteProyecto(request):
@@ -322,7 +315,6 @@ def UnirteProyecto(request):
         return redirect('FasesCoil', codigo)
     else:
         return redirect('Error', comprobacion)
-
 @csrf_protect
 @login_required(login_url='Login')
 def AgregarUsuarioProyecto(request,proyecto,codigo):
@@ -356,7 +348,6 @@ def AgregarUsuarioProyecto(request,proyecto,codigo):
     except Exception as e:
         return redirect('Error',e)
     return redirect('Error','Algo fallo')
-
 @csrf_protect
 @login_required(login_url='Login')
 def UnirteProyectoPage(request, codigo):
@@ -383,7 +374,6 @@ def UnirteProyectoPage(request, codigo):
         return redirect('FasesCoil')
     else:
         return redirect('Error', comprobacion)
-
 @csrf_protect
 @login_required(login_url='Login')
 def IntroduccionCoil(request, codigo):
@@ -405,7 +395,6 @@ def IntroduccionCoil(request, codigo):
                 'layout' : layout})
     else:
         return redirect('Error', comprobacion)
-
 @csrf_protect
 @login_required(login_url='Login')
 def indexFases(request, codigo):
@@ -433,7 +422,6 @@ def indexFases(request, codigo):
                 'fases': fases})
     else:
         return redirect('Error', comprobacion)
-
 @csrf_protect
 @login_required(login_url='Login')
 def Fase1(request, codigo, idFase):
@@ -457,6 +445,9 @@ def Fase1(request, codigo, idFase):
 
                 cursor.callproc('listaMateriales', [idFase])
                 materiales = cursor.fetchall()
+
+                cursor.callproc('obtener_actividades_por_fase', [idFase])
+                actividades = cursor.fetchall()
             return render(request, 'pages/FasesCoil/fase1.html', {
                 'enlace_activo': 'tareas',
                 'enlace_activo1': idFase,
@@ -465,13 +456,13 @@ def Fase1(request, codigo, idFase):
                 'usuario': usuario,
                 'layout': layout,
                 'fases': fases,
-                'materiales': materiales
+                'materiales': materiales,
+                'actividades': actividades
             })
         except Exception as e:
             return redirect('Error', str(e))
     else:
         return redirect('Error', comprobacion)
-
 @csrf_protect
 @login_required(login_url='Login')
 def ListaAlumnosProfesores (request, codigo): 
@@ -501,11 +492,9 @@ def ListaAlumnosProfesores (request, codigo):
                 'alumnos':alumnos})
     else:
         return redirect('Error', comprobacion)
-
 @csrf_protect
 @login_required(login_url='Login')
 def ProyectoDetail(request, codigo):
-    url_sistema = request.build_absolute_uri(reverse("Index"))
     layout = LlenarLayout(request)
     usuario = request.user
     tipo_usuario = usuario.rol.nombre
@@ -548,16 +537,13 @@ def ProyectoDetail(request, codigo):
                 'anuncios': anuncios,
                 'comentarios': comentarios_list,
                 'enlaces': enlaces_list,
-                'archivos':archivos_list,
-                'host': url_sistema})
+                'archivos':archivos_list})
     else:
         return redirect('Error', comprobacion)
-
 @csrf_protect
 @login_required(login_url='Login')
 def ListaActividadesPorFases(request):
     return render(request,'pages/Actividades/ListaActividadesPorFases.html',{'enlace_activo': 'tareas'})
-
 @csrf_protect
 @login_required(login_url='Login')
 def ConfiguracionProyecto(request, codigo):
@@ -592,7 +578,6 @@ def ConfiguracionProyecto(request, codigo):
             return redirect('Error', 'Sin permisos')
     else:
         return redirect('Error', comprobacion)
-
 @csrf_protect
 @login_required(login_url='Login')
 def SeguimientoActividad(request, codigo):
@@ -622,13 +607,18 @@ def SeguimientoActividad(request, codigo):
                 'alumnos': alumnos})
     else:
         return redirect('Error', comprobacion)
-
 @csrf_protect
 @login_required(login_url='Login')
-def ViAlActividades(request):
+def ViAlActividades(request, actividad):
     layout = LlenarLayout(request)
-    return render(request, 'pages/Actividades/ViAlActividades.html',{
-        'layout': layout
+    
+    with connection.cursor() as cursor:
+        cursor.callproc('obtener_actividad_por_id', [actividad])
+        resultado = cursor.fetchone()  # Corregido el nombre de la variable
+
+    return render(request, 'pages/Actividades/ViAlActividades.html', {
+        'layout': layout,
+        'actividad': resultado,  # Corregido el nombre de la variable
     })
 
 @csrf_protect
@@ -638,12 +628,18 @@ def ViAlMateriales(request,material):
     with connection.cursor() as cursor:
         cursor.callproc('obtener_material_por_id', [material])
         resulatdo = cursor.fetchone()
+
         cursor.callproc('obtener_comentarios_materiales', [material])
         comentarios = cursor.fetchall()
+
+        cursor.callproc('enlacesMateriales', [material])
+        links = cursor.fetchall()
     return render(request, 'pages/Materiales/ViAlMateriales.html',{
         'layout': layout,
         'material': resulatdo,
-        'mostrar_comentarios': comentarios
+        'mostrar_comentarios': comentarios,
+        'mostrar_links': links
+
     })
 
 @csrf_protect
@@ -669,7 +665,6 @@ def RegistroAlumno(request):
         form = RegistroAlumnoForm()
 
     return render(request, 'pages/Registro/FormularioAlumno.html', {'form': form, 'nombre_usuario': usuario.nombre_usuario})
-
 @csrf_protect
 @login_required(login_url='Login')
 def RegistroProfesor(request):
@@ -718,7 +713,7 @@ def ProfesorDatosPersonales(request):
         form = RegisterProfesorForm(instance=profesor)
 
     return render(request, 'pages/Registro/DatosProfesor.html', {'form': form, 'profesor_nombre': profesor.nombre})
-
+@csrf_protect
 def Registro(request):
     if request.method == 'POST':
         form = RegistroForm(request.POST)
@@ -754,12 +749,13 @@ def Registro(request):
             request.session['codigo_verificacion'] = codigo_verificacion
             request.session['correo_institucional'] = form.cleaned_data['correo_institucional']
 
-            messages.success(request, "Se envio un codigo para la verificacion del correo, sera reedirigido a una pagina para verificar tu codigo")
+            messages.success(request, "Se envió un código para la verificación del correo. Serás redirigido a una página para verificar tu código.")
             # # Redirigir a la vista de verificación de código
     else:
         form = RegistroForm()
 
     return render(request, 'pages/Registro/Registro.html', {'form': form})
+
 def verify_code(request):
     if request.method == 'POST':
         form = VerificationCodeForm(request.POST)
@@ -795,14 +791,14 @@ def verify_code(request):
                         'Gracias por unirte a nosotros.'
                     )
                     send_mail(
-                        'Bienvenida al Sistema',
+                        'Bienvenido al Sistema',
                         mensaje_bienvenida,
                         'from@example.com',
                         [usuario.correo_institucional],
                         fail_silently=False,
                     )
 
-                    messages.success(request, "Código correcto, Usuario registrado correctamente. Serás redirigido a una página para iniciar sesión.")
+                    messages.success(request, "Código correcto. Usuario registrado correctamente. Serás redirigido a una página para iniciar sesión.")
                     del request.session['registro_form_data']
                     del request.session['codigo_verificacion']
                     del request.session['correo_institucional']
@@ -815,7 +811,6 @@ def verify_code(request):
         form = VerificationCodeForm()
 
     return render(request, 'pages/Registro/VerificarCodigo.html', {'form': form})
-
 @csrf_protect
 @login_required(login_url='Login')
 def save_other_university(request):
@@ -833,7 +828,7 @@ def save_other_university(request):
             return redirect('registro_profesor')
 
     return render(request, 'pages/Modals/AgregarUniversidad.html')
-
+@csrf_protect
 def Login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -866,7 +861,6 @@ def Login(request):
     else:
         form = LoginForm()
     return render(request, 'pages/Login/Login.html', {'form': form})
-
 @csrf_protect
 @login_required(login_url='Login')
 def Home(request):
@@ -926,6 +920,7 @@ def check_username(request):
     }
     return JsonResponse(data)
 
+@csrf_protect
 def validate_credentials(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -995,11 +990,10 @@ def EditDatosProfesor(request, codigo):
     else:
         return redirect('Error', comprobacion)
 
-
+@csrf_protect
 def Error(request,error):
     layout = LlenarLayout(request)
     return render(request, 'pages/error.html',{'error':error,'layout':layout})
-
 @csrf_protect
 @login_required(login_url='Login')
 def editarProyecto(request,proyecto,codigo):
@@ -1037,7 +1031,6 @@ def editarProyecto(request,proyecto,codigo):
             return redirect('Error', resultado)
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
-
 @csrf_protect
 @login_required(login_url='Login')
 def zoomProyecto(request,proyecto,codigo):
@@ -1063,7 +1056,6 @@ def zoomProyecto(request,proyecto,codigo):
             return redirect('Error', resultado)
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
-
 @csrf_protect
 @login_required(login_url='Login')
 def ArchivarProyecto(request,proyecto,codigo):
@@ -1087,7 +1079,6 @@ def ArchivarProyecto(request,proyecto,codigo):
             return redirect('Error', resultado)
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
-
 @csrf_protect
 @login_required(login_url='Login')
 def ReactivarProyecto(request,proyecto,codigo):
@@ -1111,7 +1102,6 @@ def ReactivarProyecto(request,proyecto,codigo):
             return redirect('Error', resultado)
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
-
 @csrf_protect
 @login_required(login_url='Login')
 def PublicarComentario(request, proyecto, codigo):
@@ -1192,7 +1182,6 @@ def PublicarComentario(request, proyecto, codigo):
             return redirect('Error', 'Datos no válidos')
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
-
 @csrf_protect
 @login_required(login_url='Login')
 def ComentarPublicacion(request, publicacion, codigo):
@@ -1232,7 +1221,6 @@ def ComentarPublicacion(request, publicacion, codigo):
             return redirect('Error', 'Datos no válidos')
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
-
 @csrf_protect
 @login_required(login_url='Login')
 def eliminarComentario(request,id_coment, codigo):
@@ -1264,7 +1252,6 @@ def eliminarComentario(request,id_coment, codigo):
                     return redirect('Error', resultado)
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
-
 @csrf_protect
 @login_required(login_url='Login')
 def editarComentario(request,id_coment, codigo):
@@ -1306,13 +1293,14 @@ def editarComentario(request,id_coment, codigo):
         return redirect('logout')
 
 #MATEO - PARTES 
+@csrf_protect
 def obtener_material_por_id(material_id):
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM obtener_material_por_id(%s)", [material_id])
         result = cursor.fetchall()
         columns = [col[0] for col in cursor.description]
         return [dict(zip(columns, row)) for row in result]
-
+    
 @csrf_protect
 @login_required(login_url='Login')
 def AgregarMaterial(request):
@@ -1320,8 +1308,11 @@ def AgregarMaterial(request):
     tipo_usuario = usuario.rol.nombre
     tema = request.POST.get('Tema')
     descripcion = request.POST.get('descripcion')
+    titulos = request.POST.getlist('linkname')
+    paths = request.POST.getlist('link')
     fases = request.POST.get('fase_publicacion_material')
     fecha = datetime.now().date()
+    combinados = zip(titulos, paths)
     try:
         if tipo_usuario == "Alumno":
             return redirect('Error', 'Error al intentar')
@@ -1337,14 +1328,20 @@ def AgregarMaterial(request):
                     id_profesor
                 ])
                 resultado = cursor.fetchone()[0]
-                if resultado != 'Error no se agrego el material':
+                if resultado != 'Error no se publico el anuncio' :
+                    if titulos:
+                        for titulo, path in combinados:
+                            cursor.callproc('EnlacesMaterial', [
+                                str(titulo),
+                                str(path),
+                                resultado
+                    ])
                     return redirect('ViAlMateriales', resultado)
             return redirect('Error', 'Error al intentar')
         else:
             return redirect('Error', resultado)
     except Exception as e:
-                return redirect('Error', str(e))
-    
+                return redirect('Error', str(e))    
 
 #COMENTARIOS
 @csrf_protect
@@ -1386,8 +1383,7 @@ def MaterialComentarios(request, id_material):
             return redirect('Error', 'Datos no válidos')
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
-    
-@csrf_protect
+@csrf_protect    
 @login_required(login_url='Login')
 def eliminarAnuncio(request,id_anuncio, codigo):
     usuario = request.user
@@ -1418,3 +1414,41 @@ def eliminarAnuncio(request,id_anuncio, codigo):
                     return redirect('Error', resultado)
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
+    
+
+#APARTADO DE ACTIVIDADES 
+    #AGREGAR UNA NUEVA ACTIVIDAD
+@csrf_protect
+@login_required(login_url='Login')
+def AgregarActividad(request):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    titulo = request.POST.get('titulo')
+    descripcion = request.POST.get('descripcion')
+    titulos = request.POST.getlist('linkname')
+    paths = request.POST.getlist('link')
+    fases = request.POST.get('fase_publicacion_actividad')
+    fecha = datetime.now().date()
+    combinados = zip(titulos, paths)
+    try:
+        if tipo_usuario == "Alumno":
+            return redirect('Error', 'Error al intentar')
+        elif tipo_usuario == "Profesor":
+            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+            id_profesor = profesor.id
+            with connection.cursor() as cursor:
+                cursor.callproc('insertarActividad', [
+                    str(titulo),
+                    str(descripcion),
+                    fecha,
+                    int(fases),
+                    id_profesor
+                ])
+                resultado = cursor.fetchone()[0]
+                
+                return redirect('ViAlActividades', resultado)
+            return redirect('Error', 'Error al intentar')
+        else:
+            return redirect('Error', resultado)
+    except Exception as e:
+                return redirect('Error', str(e))

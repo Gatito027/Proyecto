@@ -101,6 +101,8 @@ class Profesor(models.Model):
 
     def save(self, *args, **kwargs):
         # Check if there is an existing image before saving a new one
+        self.nombre = self.nombre.title()
+        self.apellidos = self.apellidos.title()
         try:
             this = Profesor.objects.get(id=self.id)
             if this.imagen != self.imagen:
@@ -173,7 +175,7 @@ class Materiales(models.Model):
     descripcion = models.TextField()
     fecha = models.DateField()
     id_fase = models.BigIntegerField()
-    tema = models.CharField(max_length=100)
+    titulo = models.CharField(max_length=100)
     id_profesor = models.IntegerField()
     
     def _str_(self):
@@ -192,3 +194,14 @@ class Materiales_enlaces(models.Model):
     path = models.TextField()
     fecha = models.DateField()
     id_anuncio= models.ForeignKey(Materiales,on_delete=models.CASCADE)
+
+# APARTADO DE ACTIVIDADES (ABAJO)
+class Actividades(models.Model):
+    titulo = models.CharField(max_length=100)
+    descripcion = models.TextField()
+    fecha = models.DateField()
+    id_fase = models.BigIntegerField()
+    id_profesor = models.IntegerField()
+    
+    def _str_(self):
+        return self.titulo

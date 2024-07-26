@@ -1,3 +1,10 @@
+{% load static %}
+
+{% include "pages/Modals/AgregarEnlaceAnuncio.html" %}
+<script src="{% static 'javascripts/Materiales/LINKS.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/Materiales/MaterialesModal1.css' %}">
+
+
 <div class="modal fade" id="crearMaterial2">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -8,7 +15,7 @@
             </div>
             <!-- Modal body -->
             <div class="modal-body">
-                <form action="{% url 'AgregarMaterial' %}" method="post">
+                <form id="materialForm" action="{% url 'AgregarMaterial' %}" method="post">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="titulo" class="form-label">Tema</label>
@@ -25,6 +32,17 @@
                                 <option value="{{ fase.0 }}">{{ fase.1 }}</option>
                             {% endfor %}
                         </select>
+                    </div>
+                    <div id="linkContainer" class="mb-3">
+                        <!-- Los campos de enlace se agregarán aquí -->
+                    </div>
+                    <div class="mb-3 row align-items-end">
+                        <a type="button" href="" data-bs-toggle="modal" data-bs-target="#Enlaces">
+                            <i class="bi bi-link-45deg"></i>
+                        </a>
+                        <div class="container mb-3">
+                            <ul id="enlacesList" class="list-group"></ul>
+                        </div>
                     </div>
                     
                     <button type="submit" class="btn btn-primary boton">Guardar</button>

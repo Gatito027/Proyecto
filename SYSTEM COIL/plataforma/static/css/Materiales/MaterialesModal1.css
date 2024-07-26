@@ -1,0 +1,41 @@
+.modal-body {
+    overflow-x: auto; /* Asegura que el contenido se pueda desplazar si es demasiado ancho */
+}
+
+.list-group-item {
+    display: flex;
+    flex-direction: column; /* Asegura que los elementos se alineen verticalmente */
+    align-items: flex-start; /* Alinea el contenido a la izquierda */
+    padding: 1rem; /* Espacio interno opcional */
+}
+
+.list-group-item a {
+    word-break: break-all; /* Permite que las URLs largas se rompan en varias líneas */
+    margin-top: 0.5rem; /* Espacio entre los enlaces y el contenido anterior */
+}
+
+.list-group-item .btn {
+    margin-left: 10px;
+    margin-top: 5px;
+}
+
+.enlace-container {
+    display: flex;
+    flex-direction: column; /* Ajusta la dirección a columna para enlaces debajo del contenido */
+    width: 100%;
+}
+
+.enlace-text {
+    flex-grow: 1;
+    word-break: break-all;
+}
+
+.enlace-icono {
+    font-size: 2rem; /* Ajusta el tamaño del icono */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el icono */
+}
+
+.enlace-leyenda {
+    font-size: 1rem; /* Ajusta el tamaño del texto de la leyenda */
+    margin-left: 10px; /* Añade espacio entre el icono y la leyenda */
+}

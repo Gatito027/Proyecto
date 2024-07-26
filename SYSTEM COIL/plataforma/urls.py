@@ -15,11 +15,13 @@ urlpatterns = [
     path('ListaActividadesPorFases/', views.ListaActividadesPorFases, name="ListaActividadesPorFases"),
     path('ConfiguracionProyecto/<str:codigo>',views.ConfiguracionProyecto, name="ConfiguracionProyecto"),
     path('SeguimientoActividad/<str:codigo>',views.SeguimientoActividad,name='SeguimientoActividad'),
-    path('ViAlActividades/',views.ViAlActividades,name="ViAlActividades"),
     path('ViAlMateriales/<int:material>', views.ViAlMateriales, name='ViAlMateriales'),
     path('AgregarMaterial/', views.AgregarMaterial, name='AgregarMaterial'),
     path('MaterialComentarios/<int:id_material>', views.MaterialComentarios, name='MaterialComentarios'),
     
+        #APARTADO DE ACTIVIDADES
+    path('ViAlActividades/<int:actividad>/', views.ViAlActividades, name='ViAlActividades'),
+    path('AgregarActividad/', views.AgregarActividad, name='AgregarActividad'),
     
     path('Registro/', views.Registro, name='Registro'),
     path('Login/', views.Login, name='Login'),
