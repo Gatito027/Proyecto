@@ -23,9 +23,9 @@ class RegistroForm(forms.ModelForm):
     def clean_correo_institucional(self):
         correo = self.cleaned_data.get('correo_institucional')
         if correo:
-            dominio_valido = any(correo.endswith(dom) for dom in ['@iua.edu.ar', '@uttt.edu.mx'])
+            dominio_valido = any(correo.endswith(dom) for dom in ['@iua.edu.ar', '@uttt.edu.mx', '@alumnos.iua.edu.ar'])
             if not dominio_valido:
-                raise forms.ValidationError("El correo debe ser institucional (@iua.edu.ar, @uttt.edu.mx)")
+                raise forms.ValidationError("El correo debe ser institucional (@iua.edu.ar, @uttt.edu.mx, @alumnos.iua.edu.ar)")
         return correo    
 
 
