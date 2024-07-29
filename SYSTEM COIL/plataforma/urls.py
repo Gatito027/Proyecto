@@ -62,8 +62,12 @@ urlpatterns = [
     path('ComentarAnucio/<int:publicacion>/<str:codigo>',views.ComentarPublicacion,name="ComentarPublicacion"),
     path('EliminarComentarioAnucio/<int:id_coment>/<str:codigo>',views.eliminarComentario,name="eliminarComentario"),
     path('EliminarAnucio/<int:id_anuncio>/<str:codigo>',views.eliminarAnuncio,name="eliminarAnuncio"),
-    path('EditarComentarioAnucio/<int:id_coment>/<str:codigo>',views.editarComentario,name="editarComentario")
+    path('EditarComentarioAnucio/<int:id_coment>/<str:codigo>',views.editarComentario,name="editarComentario"),
     # path('articulos/',views.articulos,name="articulos"),
     # path('articulo/',views.arcticulo,name="articulo"),
-
+    path('invitarProyecto/<str:codigo>',views.invitarProyecto,name="invitarProyecto"),
+    path('expulsarAlumno/<int:id_alumno>/<str:codigo>',views.expulsarAlumno,name="expulsarAlumno"),
+    path('expulsarProfesor/<int:id_profesor>/<str:codigo>',views.expulsarProfesor,name="expulsarProfesor"),
+    path('adminProyecto/<int:id_profesor>/<str:codigo>',views.adminProyecto,name="adminProyecto"),
+    path('editarPost/<int:id_anuncio>/<str:codigo>',views.editarPost,name="editarPost")
 ]

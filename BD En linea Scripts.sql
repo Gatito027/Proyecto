@@ -528,7 +528,7 @@ BEGIN
     FROM plataforma_anuncios AS anuncio
     INNER JOIN public.plataforma_profesor AS profesor ON anuncio.id_profesor_id = profesor.id 
     WHERE anuncio.id_proyecto_id = id_proyecto
-    ORDER BY fecha_edit DESC;  -- Ordenar por fecha_edit descendente
+    ORDER BY fecha DESC;  -- Ordenar por fecha_edit descendente
 END;
 $$ LANGUAGE plpgsql;
 
@@ -597,7 +597,7 @@ BEGIN
     FROM public.plataforma_anuncios_comentarios AS comentario
     INNER JOIN public.plataforma_profesor AS comentarioprofesor ON comentario.id_profesor_id = comentarioprofesor.id 
     WHERE comentario.id_anuncio_id = id_anuncio_parm
-    ORDER BY fecha_edit asc ;   -- Ordenar por fecha_edit descendente
+    ORDER BY fecha asc ;   -- Ordenar por fecha_edit descendente
 END;
 $$ LANGUAGE plpgsql;
 
@@ -811,7 +811,7 @@ as
 $$
 BEGIN
 	RETURN QUERY
-	select enlaces.id, enlaces.titulo, enlaces.path, enlaces.fecha, enlaces.id_anuncio_id, substring(enlaces.path from 'https?://([^/]+)') as dominio 
+	select enlaces.id, enlaces.titulo, enlaces.path, enlaces.fecha, enlaces.id_anuncio_id, substring(enlaces.path from 'https?://([^/]+)') as dominio, substring(columna, 33, 11) AS id_video 
 	from public.plataforma_anuncios_enlaces as enlaces
 	where enlaces.id_anuncio_id = id_anuncio_parm;
 END;
@@ -946,8 +946,187 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
-drop function enlacesMateriales(int);
-select enlacesMateriales(11);
+
+--obtener lista de actividades por fase
+CREATE OR REPLACE FUNCTION obtener_actividades_por_fase(fase_id INTEGER)
+RETURNS TABLE(
+    id INT8,
+    titulo VARCHAR,
+    descripcion TEXT,
+    fecha DATE,
+    id_fase INT8,
+    id_profesor INT4
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT act.id, act.titulo, act.descripcion, act.fecha, act.id_fase, act.id_profesor
+    FROM public.plataforma_actividades as act
+    WHERE act.id_fase = fase_id;
+END;
+$$ LANGUAGE plpgsql;
+
+
+--eliminar un alumno del proyecto por id
+Create or replace Function EliminarAlumnoDelProyecto(
+	id_parm int,
+	id_proyecto_parm int
+) returns varchar
+as
+$$
+BEGIN
+	DELETE FROM public.plataforma_alumnos_proyecto as alumno
+	WHERE alumno.id_alumno_id = id_parm and alumno.id_proyecto_id = id_proyecto_parm;
+	RETURN 'Eliminado exitosamente';
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 'Error no se puedo expulsar al alumno';
+END;
+$$
+LANGUAGE plpgsql;
+
+
+--eliminar un profesor del proyecto por id
+Create or replace Function EliminarProfesorDelProyecto(
+	id_parm int,
+	id_proyecto_parm int
+) returns varchar
+as
+$$
+BEGIN
+	DELETE FROM public.plataforma_profesores_proyecto as profesor
+	WHERE profesor.id_profesor_id = id_parm and profesor.id_proyecto_id = id_proyecto_parm;
+	RETURN 'Eliminado exitosamente';
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 'Error no se puedo expulsar al alumno';
+END;
+$$
+LANGUAGE plpgsql;
+
+
+-- validar correos
+
+Create or replace Function obteneroCorreoUsuario(
+	correo_parm varchar
+) returns table(
+	correo varchar,
+    usuario varchar
+)
+as
+$$
+BEGIN
+	RETURN QUERY
+	select usuario.correo_institucional, usuario.nombre_usuario 
+	from plataforma_usuario as usuario
+	where usuario.correo_institucional = correo_parm;
+END;
+$$
+LANGUAGE plpgsql;
+
+--Nombtrar nuevo admin proyecto
+Create or replace Function superAdminDelProyecto(
+	id_profesor_parm int,
+	id_proyecto_parm int
+) returns varchar
+as
+$$
+BEGIN
+UPDATE public.plataforma_proyectos
+SET id_profesor_id=id_profesor_parm
+WHERE id=id_proyecto_parm;
+	RETURN 'Actulizado exitosamente';
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 'Error no se puedo cambiar el administrador del proyecto';
+END;
+$$
+LANGUAGE plpgsql;
+
+
+
+--editar anuncio
+Create or replace Function EditarAnuncio(
+	id_parm int,
+	comentario_parm text 
+) returns varchar
+as
+$$
+BEGIN
+	UPDATE public.plataforma_anuncios
+	SET comentario=comentario_parm, fecha_edit= CURRENT_TIMESTAMP
+	WHERE id=id_parm;
+RETURN 'Editado exitosamente';
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 'Error no se edito el post';
+END;
+$$
+LANGUAGE plpgsql;
+
+
+--buscar el id Alumno por Post Id
+Create or replace function buscarAlumnoPostbyId(
+	id_anuncio_parm int
+) returns table(
+	id INT8
+)
+as
+$$
+BEGIN
+	RETURN QUERY
+	select post.id_alumno_id from public.plataforma_anuncios as post
+	where post.id = id_anuncio_parm;
+END;
+$$
+LANGUAGE plpgsql;
+
+--buscar el id Profesor por Post Id
+Create or replace function buscarProfesorPostbyId(
+	id_anuncio_parm int
+) returns table(
+	id INT8
+)
+as
+$$
+BEGIN
+	RETURN QUERY
+	select post.id_profesor_id from public.plataforma_anuncios as post
+	where post.id = id_anuncio_parm;
+END;
+$$
+LANGUAGE plpgsql;
+
+
+
+
+
+
+
+
+--editar comentario
+Create or replace Function EditarComentario(
+	id_parm int,
+	comentario_parm text 
+) returns varchar
+as
+$$
+BEGIN
+	UPDATE public.plataforma_anuncios_comentarios
+	SET comentario=comentario_parm, fecha_edit=CURRENT_TIMESTAMP
+	WHERE id=id_parm;
+	RETURN 'Editado exitosamente';
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 'Error no se edito el comentario';
+END;
+$$
+LANGUAGE plpgsql;
+
+select BuscarProyectoByCodigo('-533001937');
+
+
+drop function obtener_actividades_por_fase(int);
+select obtener_actividades_por_fase(1);
 
 
 
@@ -1017,13 +1196,14 @@ select comentariospublicados.id, comentariospublicados.comentario, comentariospu
 
 
 
-
-
+delete from public.plataforma_anuncios_enlaces;
+delete from public.plataforma_materiales_enlaces;
 delete from public.plataforma_materiales_comentarios;
 delete from public.plataforma_materiales;
 delete from public.plataforma_anuncios_archivos;
 delete from public.plataforma_anuncios_comentarios;
 delete from public.plataforma_anuncios;
+
 
 
 delete from public.plataforma_alumnos_proyecto;

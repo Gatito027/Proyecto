@@ -1452,3 +1452,150 @@ def AgregarActividad(request):
             return redirect('Error', resultado)
     except Exception as e:
                 return redirect('Error', str(e))
+
+@login_required(login_url='Login')
+def invitarProyecto(request, codigo):
+    correos = request.POST.getlist('correos')
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    url_proyecto = request.build_absolute_uri(reverse('EntrarProyecto', args=[codigo]))
+    url_sistema = request.build_absolute_uri(reverse('Login'))
+    try:
+        if tipo_usuario == "Alumno":
+            return redirect('Error', 'Tu usuario no puede realizar esto')
+        elif tipo_usuario == "Profesor":
+            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+            nombre= profesor.nombre
+            with connection.cursor() as cursor:
+                cursor.callproc('BuscarProyectoByCodigo', [codigo])
+                proyectoDetails = cursor.fetchone()
+                for email in correos:
+                    cursor.callproc('obteneroCorreoUsuario', [email])
+                    correoYUsuario = cursor.fetchone()
+                    if correoYUsuario:
+                        #Correo
+                        mensaje_invitacion = (
+                        f'Hola, {correoYUsuario[1]}.\n\n'
+                        f'El profesor {nombre}, te invito a unirte al Proyecto COIL {proyectoDetails[1]}\n'
+                        f'Puedes acceder al proyecto utilizando el siguiente enlace: {url_proyecto}\n'
+                        f'Tambien puede utilizar el codigo: {codigo}.'
+                        )
+                    else:
+                        mensaje_invitacion = (
+                        f'Hola, te han invitado a unirte al Proyecto COIL {proyectoDetails[1]}\n\n'
+                        f'Al parcer no tienes una cuenta utiliza este enlace para registrarte: {url_sistema}\n'
+                        f'Puedes acceder al proyecto utilizando el siguiente enlace: {url_proyecto}\n'
+                        f'Tambien puede utilizar el codigo: {codigo}.'
+                        )
+                    send_mail(
+                        'Nueva invitacion a un proyecto',
+                        mensaje_invitacion,
+                        'from@example.com',
+                        [email],
+                        fail_silently=False,
+                    )
+                    
+            return redirect('ListaAlumnosProfesores', codigo)
+        else:
+            return redirect('Error', 'Datos no válidos')
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+            return redirect('logout')
+    
+@login_required(login_url='Login')
+def expulsarAlumno(request, id_alumno, codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    try:
+        if tipo_usuario == 'Alumno':
+            return redirect('Error', 'No tienes permisos parar realizar esto')
+        elif tipo_usuario == 'Profesor':
+            with connection.cursor() as cursor:
+                cursor.callproc('buscarProyectoPorCodigo', [codigo])
+                proyectoid = cursor.fetchone()[0]
+                cursor.callproc('EliminarAlumnoDelProyecto', [id_alumno, proyectoid])
+                resultado = cursor.fetchone()[0]
+                if resultado == 'Eliminado exitosamente':
+                    return redirect('ListaAlumnosProfesores', codigo)
+                else:
+                    return redirect('Error', resultado)
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
+    
+@login_required(login_url='Login')
+def expulsarProfesor(request, id_profesor, codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    try:
+        if tipo_usuario == 'Alumno':
+            return redirect('Error', 'No tienes permisos parar realizar esto')
+        elif tipo_usuario == 'Profesor':
+            with connection.cursor() as cursor:
+                cursor.callproc('buscarProyectoPorCodigo', [codigo])
+                proyectoid = cursor.fetchone()[0]
+                cursor.callproc('EliminarProfesorDelProyecto', [id_profesor, proyectoid])
+                resultado = cursor.fetchone()[0]
+                if resultado == 'Eliminado exitosamente':
+                    return redirect('ListaAlumnosProfesores', codigo)
+                else:
+                    return redirect('Error', resultado)
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
+    
+@login_required(login_url='Login')
+def adminProyecto(request, id_profesor, codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    try:
+        if tipo_usuario == 'Alumno':
+            return redirect('Error', 'No tienes permisos parar realizar esto')
+        elif tipo_usuario == 'Profesor':
+            with connection.cursor() as cursor:
+                cursor.callproc('buscarProyectoPorCodigo', [codigo])
+                proyectoid = cursor.fetchone()[0]
+                cursor.callproc('superAdminDelProyecto', [id_profesor, proyectoid])
+                resultado = cursor.fetchone()[0]
+                if resultado == 'Actulizado exitosamente':
+                    return redirect('ListaAlumnosProfesores', codigo)
+                else:
+                    return redirect('Error', resultado)
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
+    
+@login_required(login_url='Login')
+def editarPost(request,id_anuncio, codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    comentario = request.POST.get('editPost')
+    try:
+        if tipo_usuario == 'Alumno':
+            alumno = Alumno.objects.get(id_usuario_id=usuario.id)
+            id_alumno = alumno.id
+            with connection.cursor() as cursor:
+                cursor.callproc('buscarAlumnoPostbyId', [id_anuncio])
+                r = cursor.fetchone()[0]
+                if id_alumno == r:
+                    cursor.callproc('EditarAnuncio', [id_anuncio, str(comentario)])
+                    resultado = cursor.fetchone()[0]
+                    if resultado == 'Editado exitosamente':
+                        return redirect('ProyectoDetail', codigo)
+                    else:
+                        return redirect('Error', resultado)
+                else:
+                    return redirect('Error', 'Tu usuario no coincide con el comentario')
+        elif tipo_usuario == 'Profesor':
+            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+            id_profesor = profesor.id
+            with connection.cursor() as cursor:
+                cursor.callproc('buscarProfesorPostbyId', [id_anuncio])
+                r = cursor.fetchone()[0]
+                if id_profesor == r:
+                    cursor.callproc('EditarAnuncio', [id_anuncio, str(comentario)])
+                    resultado = cursor.fetchone()[0]
+                    if resultado == 'Editado exitosamente':
+                        return redirect('ProyectoDetail', codigo)
+                    else:
+                        return redirect('Error', resultado)
+                else:
+                    return redirect('Error', 'Tu usuario no coincide con el comentario')
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
