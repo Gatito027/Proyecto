@@ -69,5 +69,6 @@ urlpatterns = [
     path('expulsarAlumno/<int:id_alumno>/<str:codigo>',views.expulsarAlumno,name="expulsarAlumno"),
     path('expulsarProfesor/<int:id_profesor>/<str:codigo>',views.expulsarProfesor,name="expulsarProfesor"),
     path('adminProyecto/<int:id_profesor>/<str:codigo>',views.adminProyecto,name="adminProyecto"),
-    path('editarPost/<int:id_anuncio>/<str:codigo>',views.editarPost,name="editarPost")
+    path('editarPost/<int:id_anuncio>/<str:codigo>',views.editarPost,name="editarPost"),
+    path('editarAnuncio/<int:id_anuncio>/<str:codigo>',views.editarPostVista,name="editarPostVista")
 ]

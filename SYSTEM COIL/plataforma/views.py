@@ -1566,6 +1566,15 @@ def editarPost(request,id_anuncio, codigo):
     usuario = request.user
     tipo_usuario = usuario.rol.nombre
     comentario = request.POST.get('editPost')
+    titulos = request.POST.getlist('linkname')
+    paths = request.POST.getlist('link')
+    editLinkID = request.POST.getlist('editedId')
+    editLinkTitle = request.POST.getlist('editedTitleLink')
+    editLinkPath = request.POST.getlist('editedLink')
+    deleteLink = request.POST.getlist('deletedLink')
+    deleteFiles = request.POST.getlist('deleted_files')
+    editLinks = zip(editLinkID, editLinkTitle,editLinkPath)
+    combinados = zip(titulos, paths)
     try:
         if tipo_usuario == 'Alumno':
             alumno = Alumno.objects.get(id_usuario_id=usuario.id)
@@ -1576,6 +1585,36 @@ def editarPost(request,id_anuncio, codigo):
                 if id_alumno == r:
                     cursor.callproc('EditarAnuncio', [id_anuncio, str(comentario)])
                     resultado = cursor.fetchone()[0]
+                    if editLinks:
+                        for editLinkID, editLinkTitle,editLinkPath in editLinks:
+                            cursor.callproc('EditarEnlacesPost', [
+                                int(editLinkID),
+                                str(editLinkPath),
+                                str(editLinkTitle)
+                            ])
+                    if deleteLink:
+                        for deletelink in deleteLink:
+                            cursor.callproc('EliminarEnlacesPost', [int(deletelink)])
+                    if deleteFiles:
+                        for deleteFile in deleteFiles:
+                            cursor.callproc('EliminarArchivosPost', [int(deleteFile)])
+                    if titulos:
+                        for titulo, path in combinados:
+                            cursor.callproc('enlacesAnuncio', [
+                                str(titulo),
+                                str(path),
+                                id_anuncio
+                            ])
+                    if 'files' in request.FILES:
+                        files = request.FILES.getlist('files')
+                        for uploaded_file in files:
+                            # Guardar cada archivo en el modelo
+                            anuncio_archivo = Anuncios_archivos(
+                                path=uploaded_file,
+                                fecha=datetime.now().date(),
+                                id_anuncio_id=id_anuncio
+                            )
+                            anuncio_archivo.save()
                     if resultado == 'Editado exitosamente':
                         return redirect('ProyectoDetail', codigo)
                     else:
@@ -1591,10 +1630,93 @@ def editarPost(request,id_anuncio, codigo):
                 if id_profesor == r:
                     cursor.callproc('EditarAnuncio', [id_anuncio, str(comentario)])
                     resultado = cursor.fetchone()[0]
+                    if editLinks:
+                        for editLinkID, editLinkTitle,editLinkPath in editLinks:
+                            cursor.callproc('EditarEnlacesPost', [
+                                int(editLinkID),
+                                str(editLinkPath),
+                                str(editLinkTitle)
+                            ])
+                    if deleteLink:
+                        for deletelink in deleteLink:
+                            cursor.callproc('EliminarEnlacesPost', [int(deletelink)])
+                    if deleteFiles:
+                        for deleteFile in deleteFiles:
+                            cursor.callproc('EliminarArchivosPost', [int(deleteFile)])
+                    if titulos:
+                        for titulo, path in combinados:
+                            cursor.callproc('enlacesAnuncio', [
+                                str(titulo),
+                                str(path),
+                                id_anuncio
+                            ])
+                    if 'files' in request.FILES:
+                        files = request.FILES.getlist('files')
+                        for uploaded_file in files:
+                            # Guardar cada archivo en el modelo
+                            anuncio_archivo = Anuncios_archivos(
+                                path=uploaded_file,
+                                fecha=datetime.now().date(),
+                                id_anuncio_id=id_anuncio
+                            )
+                            anuncio_archivo.save()
                     if resultado == 'Editado exitosamente':
                         return redirect('ProyectoDetail', codigo)
                     else:
                         return redirect('Error', resultado)
+                else:
+                    return redirect('Error', 'Tu usuario no coincide con el comentario')
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
+    
+@login_required(login_url='Login')
+def editarPostVista(request,id_anuncio, codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    layout = LlenarLayout(request)
+    try:
+        if tipo_usuario == 'Alumno':
+            alumno = Alumno.objects.get(id_usuario_id=usuario.id)
+            id_alumno = alumno.id
+            with connection.cursor() as cursor:
+                cursor.callproc('buscarAlumnoPostbyId', [id_anuncio])
+                r = cursor.fetchone()[0]
+                if id_alumno == r:
+                    cursor.callproc('buscarPostbyId', [id_anuncio])
+                    anuncio = cursor.fetchall()
+                    cursor.callproc('verArchivosAnuncio', [id_anuncio])
+                    archivos = cursor.fetchall()
+                    cursor.callproc('verEnlacesAnuncios', [id_anuncio])
+                    enlaces = cursor.fetchall()
+                    return render(request, 'pages/ForoProyecto/EditarAnuncio.html',{
+                        'layout': layout,
+                        'anuncio': anuncio[0],
+                        'archivos': archivos,
+                        'enlaces': enlaces,
+                        'codigo': codigo
+                    })
+                else:
+                    return redirect('Error', 'Tu usuario no coincide con el comentario')
+        elif tipo_usuario == 'Profesor':
+            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+            id_profesor = profesor.id
+            with connection.cursor() as cursor:
+                cursor.callproc('buscarProfesorPostbyId', [id_anuncio])
+                r = cursor.fetchone()[0]
+                if id_profesor == r:
+                    cursor.callproc('buscarPostbyId', [id_anuncio])
+                    anuncio = cursor.fetchall()
+                    cursor.callproc('verArchivosAnuncio', [id_anuncio])
+                    archivos = cursor.fetchall()
+                    cursor.callproc('verEnlacesAnuncios', [id_anuncio])
+                    enlaces = cursor.fetchall()
+                    return render(request, 'pages/ForoProyecto/EditarAnuncio.html',{
+                        'layout': layout,
+                        'anuncio': anuncio[0],
+                        'archivos': archivos,
+                        'enlaces': enlaces,
+                        'codigo': codigo
+                    })
                 else:
                     return redirect('Error', 'Tu usuario no coincide con el comentario')
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
