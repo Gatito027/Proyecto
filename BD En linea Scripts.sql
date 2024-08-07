@@ -124,17 +124,6 @@ $$
 language sql
 
 -- Agregar un proyecto
-drop function CrearProyectocoil(
-    idUsuario INT,
-    nombre_parm VARCHAR,
-    materia_parm VARCHAR,
-    codigo_parm VARCHAR,
-    descripcion_parm TEXT,
-    fecha_inicio_parm DATE,
-    fecha_fin_parm DATE,
-    ciclo_escolar_parm VARCHAR,
-    color_parm VARCHAR
-);
 CREATE OR REPLACE FUNCTION CrearProyectocoil(
     idUsuario INT default NULL,
     nombre_parm VARCHAR default NULL,
@@ -152,7 +141,7 @@ DECLARE
 begin
 	
 	-- Inserta en la tabla de proyectos
-     INSERT INTO public.plataforma_proyectos (
+    INSERT INTO public.plataforma_proyectos (
         nombre, materia, codigo, descripcion, fecha_inicio, fecha_fin, ciclo_escolar, achivo_proyecto, color, id_profesor_id, enlace_zoom
     )
     VALUES (nombre_parm, materia_parm, codigo_parm, descripcion_parm, fecha_inicio_parm, fecha_fin_parm, ciclo_escolar_parm, false, color_parm, idUsuario, '')
@@ -167,10 +156,10 @@ begin
     -- Inserta en la tabla de temas
     INSERT INTO public.plataforma_fases (titulo, puntuacion, id_proyecto_id)
     VALUES ('Fase 1: Conozcamonos', '20', proyecto),
-           ('Fase 2: Organicémonos', '20', proyecto),
-           ('Fase 3: Manos a la obra', '20', proyecto),
-           ('Fase 4: Lúcete', '20', proyecto),
-           ('Fase 5: Reflexionemos', '20', proyecto);
+        ('Fase 2: Organicémonos', '20', proyecto),
+        ('Fase 3: Manos a la obra', '20', proyecto),
+        ('Fase 4: Lúcete', '20', proyecto),
+        ('Fase 5: Reflexionemos', '20', proyecto);
 
     RETURN 'Proyecto creado exitosamente';
 EXCEPTION

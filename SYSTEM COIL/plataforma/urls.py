@@ -15,14 +15,24 @@ urlpatterns = [
     path('ListaActividadesPorFases/', views.ListaActividadesPorFases, name="ListaActividadesPorFases"),
     path('ConfiguracionProyecto/<str:codigo>',views.ConfiguracionProyecto, name="ConfiguracionProyecto"),
     path('SeguimientoActividad/<str:codigo>',views.SeguimientoActividad,name='SeguimientoActividad'),
-    path('ViAlMateriales/<int:material>', views.ViAlMateriales, name='ViAlMateriales'),
+    path('ViAlMateriales/<int:material_id>/', views.ViAlMateriales, name='ViAlMateriales'),
     path('AgregarMaterial/', views.AgregarMaterial, name='AgregarMaterial'),
     path('MaterialComentarios/<int:id_material>', views.MaterialComentarios, name='MaterialComentarios'),
-    
+    path('comentarioPrivMaterial/<int:id_material>/<int:id_alumno>',views.comentarioPrivMaterial,name="comentarioPrivMaterial"),
+
         #APARTADO DE ACTIVIDADES
-    path('ViAlActividades/<int:actividad>/', views.ViAlActividades, name='ViAlActividades'),
+    path('ViAlActividades/<int:actividad_id>/', views.ViAlActividades, name='ViAlActividades'),
     path('AgregarActividad/', views.AgregarActividad, name='AgregarActividad'),
-    
+    path('ActividadComentarios/<int:id_actividad>', views.ActividadComentarios, name='ActividadComentarios'),
+    path('comentarioPrivActividad/<int:id_actividad>/<int:id_alumno>',views.comentarioPrivActividad,name="comentarioPrivActividad"),
+    path('subirActividad/<int:id_actividad_parm>',views.subirActividad,name="subirActividad"),
+
+    #PATH DEL SEGUIMIENTO DE LAS ACTIVIDADES DEL MALUMNO
+    path('SeguimientoAct/<str:codigo>/<int:id_alumno>',views.SeguimientoAct,name="SeguimientoAct"),
+    path('calificarActividad/<int:id_entrega>/<int:id_alumno>/<str:codigo>',views.calificarActividad,name="calificarActividad"),
+    path('anularCalificacionActividad/<int:id_entrega>/<int:id_alumno>/<str:codigo>',views.anularCalificacionActividad,name="anularCalificacionActividad"),
+
+   
     path('Registro/', views.Registro, name='Registro'),
     path('Login/', views.Login, name='Login'),
     path('Home/', views.Home, name="Home"),

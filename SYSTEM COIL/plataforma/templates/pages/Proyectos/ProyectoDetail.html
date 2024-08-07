@@ -20,23 +20,7 @@
       </button>
     </div>
     {% if layout.0 == "Alumno" %}
-    <div class="mt-2 tarjeta">
-      <p class="titulo-2">Actividades pendientes</p>
-      <a href="{% url 'ViAlActividades' 1 %}" class="correguir">
-        <div class="icono">
-          <span class="material-symbols-outlined"> task_alt </span>
-        </div>
-        <div class="columna">
-          <div class="subtexto-1">Actividad de prueba</div>
-          <div class="fecha">22/05/24</div>
-        </div>
-      </a>
-      <a
-        class="btn btn-outline-primary mt-3"
-        href="{% url 'FasesCoil' codigo %}"
-        >Mostrar más</a
-      >
-    </div>
+    
     {% elif layout.0 == "Profesor" %}
     <div class="mt-2 tarjeta">
       <p class="titulo-2">Invitar alumnos y profesores</p>

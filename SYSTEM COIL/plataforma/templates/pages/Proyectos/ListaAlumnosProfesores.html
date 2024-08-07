@@ -23,9 +23,9 @@
             {% if layout.0 == "Profesor" and proyectoDetails.0.8 == False and profesor.2 != proyectoDetails.0.11 %}
             <div>
                 {% if layout.8 == proyectoDetails.0.11 %}
-                <a title="Nombrarlo como super administrador" class="ml-auto" onclick="eliminar(event, this);" data-url="{% url 'adminProyecto' profesor.2 codigo %}"><i class="bi bi-person-fill-up"></i></a>
+                <h3><a title="Nombrarlo como administrador del proyecto" class="ml-auto" onclick="eliminar(event, this);" data-url="{% url 'adminProyecto' profesor.2 codigo %}"><i class="bi bi-person-fill-up"></i></a>
                 {% endif %}
-                <a title="Expulsar" class="ml-auto" onclick="eliminar(event, this);" data-url="{% url 'expulsarProfesor' profesor.2 codigo %}"><i class="bi bi-person-x"></i></a>
+                <a title="Expulsar" class="ml-auto" onclick="eliminar(event, this);" data-url="{% url 'expulsarProfesor' profesor.2 codigo %}"><i class="bi bi-person-x"></i></a></h3>
             </div>
             {% endif %}
         </div>
@@ -39,7 +39,7 @@
             <li class="d-flex justify-content-between">
                 {{alumno.0}} {{alumno.1}}
                 {% if layout.0 == "Profesor" and proyectoDetails.0.8 == False %}
-                <a title="Expulsar" class="ml-auto" onclick="eliminar(event, this);" data-url="{% url 'expulsarAlumno' alumno.2 codigo %}"><i class="bi bi-person-x"></i></a>
+                <h3><a title="Expulsar" class="ml-auto" onclick="eliminar(event, this);" data-url="{% url 'expulsarAlumno' alumno.2 codigo %}"><i class="bi bi-person-x"></i></a></h3>
                 {% endif %}
             </li>
             {% endfor %}

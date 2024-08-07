@@ -1,6 +1,13 @@
 {% extends 'layouts/baseAdmin.html' %}
 {% load static %}
 {% block content %}
+
+<link rel="stylesheet" href="{% static 'css/Actividades/ActividadesModal1.css' %}">
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
 <div class="container-fluid">
     <div class="row">
         <!-- Sidebar -->
@@ -14,7 +21,8 @@
 
         <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <div
+                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2 text-primary"><strong>Tema:</strong> {{ actividad.3 }}</h1>
                 <button class="btn btn-dark" onclick="window.history.back();">Volver</button>
             </div>
@@ -23,7 +31,8 @@
                 <div class="col-md-8">
                     <div class="mb-3">
                         <ul class="list-group shadow-lg">
-                            <li class="list-group-item bg-light text-dark">{{ actividad.1 }} {{ actividad.2 }} • {{ actividad.5 }}</li>
+                            <li class="list-group-item bg-light text-dark">{{ actividad.1 }} {{ actividad.2 }} •
+                                {{actividad.5 }}</li>
                         </ul>
                     </div>
 
@@ -33,20 +42,96 @@
                                 <li class="list-group-item bg-light text-dark">{{ actividad.4 }}
                                     {% for linkss in mostrar_links %}
                                     <br>
-                                    <a href="{{ linkss.2 }}">{{ linkss.1 }} | {{ linkss.2 }}</a>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#linkModal"
+                                        data-link="{{ linkss.2 }}">{{ linkss.1 }} | {{ linkss.2 }}</a>
+                                    {% endfor %}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    
+                    <!-- Mostrar archivos adjuntos -->
+                    <div class="card mb-4 shadow-lg border-primary">
+                        <div class="card-body">
+                            <h5 class="card-title">Archivos Adjuntos</h5>
+                            <ul class="list-group">
+                                {% for archivo in archivos %}
+                                <li class="list-group-item">
+                                    <a href="{{ archivo.path.url }}">{{ archivo.path.name }}</a>
                                 </li>
                                 {% endfor %}
                             </ul>
                         </div>
                     </div>
+                    
 
-                    <!-- Agregar comentario de la clase -->
-                    <a href="#" class="card-link" id="toggleSeccionComentarioClase">Agregar comentario sobre la Actividad</a>
-                    <div id="seccionComentarioClase" style="display: none;">
-                        <textarea id="entradaComentarioClase" class="form-control mb-2" placeholder="Escribe tu comentario aquí"></textarea>
-                        <button id="botonEnviarComentarioClase" class="btn btn-primary">Enviar comentario</button>
-                        <div id="comentariosClase"></div>
+                    <h4 class="text-success">Comentarios Privados</h4>
+                    {% if layout.0 == "Alumno" %}
+                    <h6 class="text-muted"><u>Agrega un comentario privado a {{ actividad.1 }} {{ actividad.2 }}</u>
+                    </h6>
+                    {% endif %}
+                    <div id="comentarios-container">
+                        {% for comenspriv in comenPriv %}
+                        <div class="comentario" data-id="{{ comenspriv.0 }}">
+
+                            <p class="font-weight-bold">{{ comenspriv.4 }} {{ comenspriv.5 }}</p>
+                            <p class="text-muted">{{ comenspriv.3 }}</p>
+                            <div>{{ comenspriv.1 }}</div>
+                            <br>
+                            {% if layout.0 == "Profesor" %}
+                            {% include "pages/Modals/ViPrActividades.html" %}
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#Comentario{{comenspriv.0}}"
+                                title="Responder" class="btn btn-outline-primary btn-sm mb-2 ms-2">Responder</a>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        {% if layout.0 == "Alumno" %}
+                        <form action="{% url 'comentarioPrivActividad' actividad.0 layout.8 %}" method="post"
+                            class="d-flex">
+                            {% csrf_token %}
+                            <input type="text" name="comentPriv"
+                                placeholder="Comenta al profesor {{ actividad.1 }} {{ actividad.2 }}"
+                                class="form-control me-2" required>
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </form>
+                        {% endif %}
                     </div>
+                    <br>
+                    <!-- Agregar comentario de la clase -->
+                    <h4 class="text-primary">Comentarios de la Clase</h4>
+                    <form action="{% url 'ActividadComentarios' actividad.0 %}" method="post"
+                        onsubmit="disableButtons()">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control px-2 shadow-sm" placeholder="Comenta..."
+                                name="comentar" required />
+                            <button class="btn btn-primary shadow-sm submitBtn" type="submit">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 0 24 24" width="30"
+                                    fill="#FFFFFF">
+                                    <path d="M2 2v20l20-10L2 2z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                    {% for comentario in mostrar_comentarios %}
+                    <div class="card mb-3 shadow-lg border-secondary">
+                        {% if layout.0 == "Alumno" and layout.8 == comentario.6 %}
+                        <div class="p-2 ms-auto comentarioConfig"></div>
+                        {% elif layout.0 == "Profesor"%}
+                        <div class="p-2 ms-auto comentarioConfig">
+                            {% if comentario.7 == layout.8 %}
+
+                            {% endif %}
+                        </div>{% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">{{ comentario.4 }} {{ comentario.5 }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ comentario.2 }}</h6>
+                            <p class="card-text">{{ comentario.1 }}</p>
+                            <p class="card-text text-muted">{{ comentario.3 }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
 
                 {% if request.user.rol.nombre == "Alumno" %}
@@ -56,24 +141,18 @@
                         <div class="card-body">
                             <h5 class="card-title">Tu trabajo</h5>
                             <div class="d-grid gap-2 mb-3">
-                                <button class="btn btn-primary" id="botonAgregarArchivo">+ Agregar o crear</button>
-                                <input type="file" id="entradaArchivo" style="display: none;">
-                                <button class="btn btn-primary" id="botonEntregar">Entregar</button>
+                                <form action="{% url 'subirActividad' actividad.0 %}" method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                <label for="entradaArchivo" class="btn btn-primary">+ Agregar o Crear</label>
+                                <input type="file" id="entradaArchivo" name="files" style="display: none;" multiple>
+                                <button class="btn btn-primary" type="submit" id="botonEntregar">Entregar</button>
+                            </form>
                             </div>
-                            <div id="archivoAdjunto"></div>
-                        </div>
-                    </div>
-
-                    <!-- Comentarios privados -->
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Comentarios privados</h5>
-                            <a href="#" class="card-link" id="enlaceComentarioPrivado">Agregar un comentario a María Guadalupe Gallegos Cerón</a>
-                            <div id="cajaComentarioPrivado" style="display: none;">
-                                <textarea id="entradaComentarioPrivado" class="form-control mb-2" placeholder="Escribe tu comentario aquí"></textarea>
-                                <button id="botonEnviarComentarioPrivado" class="btn btn-primary">Enviar comentario</button>
+                            <!-- Contenedor para mostrar los archivos seleccionados -->
+                            <div id="archivoAdjunto">
+                                <p><strong>Archivos seleccionados:</strong></p>
+                                <ul id="listaArchivos" class="list-group"></ul>
                             </div>
-                            <div id="seccionComentarioPrivado"></div>
                         </div>
                     </div>
                 </div>
@@ -83,6 +162,96 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script src="{% static 'javascripts/Actividades/ViAlActividades.js' %}"></script>
+<!-- Contenedor para el modal -->
+<div class="modal fade" id="linkModal" tabindex="-1" aria-labelledby="linkModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="linkModalLabel">Contenido del Enlace</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <iframe id="linkModalIframe" src="" width="100%" height="400px" frameborder="0"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var archivoInput = document.getElementById('entradaArchivo');
+            var agregarButton = document.querySelector('label[for="entradaArchivo"]'); // El label actúa como botón
+            var botonEntregar = document.getElementById('botonEntregar');
+            var listaArchivos = document.getElementById('listaArchivos');
+        
+            // Evento para abrir el selector de archivos
+            agregarButton.addEventListener('click', function() {
+                archivoInput.click();
+            });
+        
+            // Evento para manejar el cambio en el input de archivos
+            archivoInput.addEventListener('change', function() {
+                // Limpiar la lista de archivos actuales
+                listaArchivos.innerHTML = '';
+        
+                // Mostrar los archivos seleccionados
+                for (var i = 0; i < archivoInput.files.length; i++) {
+                    var archivo = archivoInput.files[i];
+                    var listItem = document.createElement('li');
+                    listItem.className = 'list-group-item';
+                    listItem.textContent = archivo.name;
+                    listaArchivos.appendChild(listItem);
+                }
+            });
+        
+            // Evento para manejar la entrega del archivo
+            botonEntregar.addEventListener('click', function() {
+                if (archivoInput.files.length > 0) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Archivo(s) seleccionado(s)!',
+                        text: 'Tu archivo está listo y entregado.',
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: '¡Oops!',
+                        text: 'Por favor, selecciona un archivo.',
+                    });
+                }
+            });
+        });
+    
+        document.addEventListener('DOMContentLoaded', function () {
+            var linkModal = document.getElementById('linkModal');
+            linkModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget; // Botón que disparó el modal
+                var link = button.getAttribute('data-link'); // Enlace del botón
+    
+                var modalIframe = linkModal.querySelector('#linkModalIframe');
+                modalIframe.src = link;
+            });
+        });
+    </script>
+    
+        
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var linkModal = document.getElementById('linkModal');
+        linkModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget; // Botón que disparó el modal
+            var link = button.getAttribute('data-link'); // Enlace del botón
+
+            var modalIframe = linkModal.querySelector('#linkModalIframe');
+            modalIframe.src = link;
+        });
+    });
+</script>
+
 {% endblock %}

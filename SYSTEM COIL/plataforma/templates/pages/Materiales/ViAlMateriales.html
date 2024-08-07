@@ -46,11 +46,50 @@
                             </ul>
                         </div>
                     </div>
-
-                    <div class="mb-4">
-                        <h4 class="text-success">Comentarios Privados</h4>
-                        <h6 class="text-muted"><u>Agrega un comentario a {{ material.1 }} {{ material.2 }}</u></h6>
+                    
+                    <!-- Mostrar archivos adjuntos -->
+                    <div>
+                        <h2>Archivos adjuntos</h2>
+                        <ul>
+                            {% for archivo in archivos %}
+                                <li><a href="{{ archivo.path.url }}">{{ archivo.path.name }}</a></li>
+                            {% endfor %}
+                        </ul>
                     </div>
+
+                    <div class="container">
+                        <div class="mb-4">
+                            <h4 class="text-success">Comentarios Privados</h4>
+                            {% if layout.0 == "Alumno" %}
+                            <h6 class="text-muted"><u>Agrega un comentario privado a {{ material.1 }} {{ material.2 }}</u></h6>
+                            {% endif %}
+                            <div id="comentarios-container">
+                                {% for comenspriv in comenPriv %}
+                                <div class="comentario" data-id="{{ comenspriv.0 }}">
+                                    
+                                    <p class="font-weight-bold">{{ comenspriv.4 }} {{ comenspriv.5 }}</p>
+                                    <p class="text-muted">{{ comenspriv.3 }}</p>
+                                    <div>{{ comenspriv.1 }}</div>
+                                    <br>
+                                    {% if layout.0 == "Profesor" %}
+                                    {% include "pages/Modals/ViPrMateriales.html" %}
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#Comentario{{comenspriv.0}}" title="Responder" class="btn btn-outline-primary btn-sm ms-2">Responder</a>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                                {% if layout.0 == "Alumno" %}
+                                <form action="{% url 'comentarioPrivMaterial' material.0 layout.8 %}" method="post" class="d-flex">
+                                    {% csrf_token %}
+                                    <input type="text" name="comentPriv" placeholder="Comenta al profesor {{ material.1 }} {{ material.2 }}" class="form-control me-2" required>
+                                    <button type="submit" class="btn btn-primary">Enviar</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    
 
                     <br>
                     <h4 class="text-primary">Comentarios de la Clase</h4>
@@ -69,12 +108,12 @@
                     {% for comentario in mostrar_comentarios %}
                     <div class="card mb-3 shadow-lg border-secondary">
                         {% if layout.0 == "Alumno" and layout.8 == comentario.6 %}
-                        <div class="p-2 ms-auto comentarioConfig"><a href="" data-bs-toggle="modal" data-bs-target="#Comentario{{a.0}}" title="Editar"><i class="bi bi-pencil"></i></a> <a href="" onclick="eliminar(event, this);" data-url="" class="Eliminar" title="Eliminar"><i class="bi bi-trash"></i></a></div>
+                        <div class="p-2 ms-auto comentarioConfig"></div>
                         {% elif layout.0 == "Profesor"%}
                         <div class="p-2 ms-auto comentarioConfig">
                             {% if comentario.7 == layout.8 %}
                             <a href="" data-bs-toggle="modal" data-bs-target="#Comentario{{a.0}}" title="Editar"><i class="bi bi-pencil"></i></a>
-                            {% endif %} <a href="" onclick="eliminar(event, this);" data-url="" class="Eliminar" title="Eliminar"><i class="bi bi-trash"></i></a>
+                            {% endif %}     
                         </div>{% endif %}
                         <div class="card-body">
                             <h5 class="card-title text-primary">{{ comentario.4 }} {{ comentario.5 }}</h5>
@@ -114,6 +153,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="{% static 'javascripts/Modals/youtube.js' %}"></script>
+
 <script src="{% static 'javascripts/Actividades/MultiEnvio.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -127,4 +168,7 @@
         });
     });
 </script>
+
 {% endblock %}
+
+

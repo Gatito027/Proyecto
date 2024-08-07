@@ -1,41 +1,55 @@
-.modal-body {
-    overflow-x: auto; /* Asegura que el contenido se pueda desplazar si es demasiado ancho */
+/* Estilos generales para el contenedor de comentarios */
+#comentarios-container {
+    margin-top: 0.5rem; /* Espacio superior reducido */
 }
 
-.list-group-item {
-    display: flex;
-    flex-direction: column; /* Asegura que los elementos se alineen verticalmente */
-    align-items: flex-start; /* Alinea el contenido a la izquierda */
-    padding: 1rem; /* Espacio interno opcional */
+/* Estilos para los comentarios */
+.comentario {
+    border: 1px solid #ddd; /* Borde ligero para los comentarios */
+    border-radius: .375rem; /* Bordes redondeados */
+    padding: 0.5rem; /* Espacio interno reducido */
+    margin-bottom: 0.5rem; /* Espacio inferior reducido */
+    background-color: #f8f9fa; /* Color de fondo claro */
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075); /* Sombra ligera */
 }
 
-.list-group-item a {
-    word-break: break-all; /* Permite que las URLs largas se rompan en varias líneas */
-    margin-top: 0.5rem; /* Espacio entre los enlaces y el contenido anterior */
+/* Estilos para los comentarios de profesor */
+.comentario .comentarioConfig {
+    float: right; /* Alinea a la derecha */
 }
 
-.list-group-item .btn {
-    margin-left: 10px;
-    margin-top: 5px;
+/* Mover el botón de responder hacia abajo */
+.comentario a.btn-outline-primary {
+    display: block; /* Hacer que el botón sea un bloque */
+    margin-top: 0.5rem; /* Espacio adicional arriba del botón reducido */
 }
 
-.enlace-container {
-    display: flex;
-    flex-direction: column; /* Ajusta la dirección a columna para enlaces debajo del contenido */
-    width: 100%;
+/* Hacer el texto de la fecha y hora en negrita */
+.comentario .text-muted {
+    font-weight: bold; /* Texto en negrita */
 }
 
-.enlace-text {
-    flex-grow: 1;
-    word-break: break-all;
+/* Estilo para el formulario de comentarios */
+#comentarios-container form {
+    display: flex; /* Utiliza flexbox para el formulario */
+    gap: 0.25rem; /* Espacio entre los campos del formulario reducido */
 }
 
-.enlace-icono {
-    font-size: 2rem; /* Ajusta el tamaño del icono */
-    cursor: pointer; /* Cambia el cursor al pasar sobre el icono */
+/* Estilo para el input de comentario */
+#comentarios-container input[type="text"] {
+    flex: 1; /* Ocupa el espacio disponible */
+    border-radius: .375rem; /* Bordes redondeados */
+    border: 1px solid #ced4da; /* Borde */
+    padding: 0.5rem; /* Espacio interno */
 }
 
-.enlace-leyenda {
-    font-size: 1rem; /* Ajusta el tamaño del texto de la leyenda */
-    margin-left: 10px; /* Añade espacio entre el icono y la leyenda */
+/* Estilo para el botón de enviar */
+#comentarios-container button[type="submit"] {
+    border-radius: .375rem; /* Bordes redondeados */
+    padding: 0.5rem 1rem; /* Espacio interno */
+}
+
+/* Estilo para los mensajes de error o advertencia */
+.alert {
+    margin-top: 0.5rem; /* Espacio superior reducido */
 }

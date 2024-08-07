@@ -143,7 +143,7 @@ class UpdateProfesorForm(forms.ModelForm):
 
 # Formulario Login
 class LoginForm(forms.Form):
-    nombre_usuario = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    nombre_usuario = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='Nombre de Usuario')
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label='Contraseña')
 
 class EmailForm(forms.Form):

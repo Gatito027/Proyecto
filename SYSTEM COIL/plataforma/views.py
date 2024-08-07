@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from .forms import *
 from django.contrib.auth.decorators import login_required
-from .models import Usuario, Catalogo, Alumno, Profesor, Rol, Anuncios_archivos
+from .models import Actividades, SubirArchivos_Actividades, SubirArchivos_Materiales, Usuario, Catalogo, Alumno, Profesor, Rol, Anuncios_archivos, Entregas_Actividades
 import json
 from django.contrib  import messages
 from datetime import datetime
@@ -371,7 +371,7 @@ def UnirteProyectoPage(request, codigo):
         except Exception as e:
             return redirect('Error',e)
     elif comprobacion == 'Inscrito':
-        return redirect('FasesCoil')
+        return redirect('FasesCoil', codigo)
     else:
         return redirect('Error', comprobacion)
 @csrf_protect
@@ -412,6 +412,8 @@ def indexFases(request, codigo):
             proyectoCodigo = cursor.fetchone()[0]
             cursor.callproc('ListasFasesByProyecto', [proyectoCodigo])
             fases = cursor.fetchall()
+            cursor.callproc('BuscarProyectoAlumnos', [proyectoCodigo])
+            alumnos = cursor.fetchall()
             return render(request,'pages/FasesCoil/indexFases.html',{
                 'enlace_activo': 'tareas',
                 'enlace_activo1': 'fases',
@@ -419,7 +421,8 @@ def indexFases(request, codigo):
                 'codigo': codigo,
                 'usuario' : usuario,
                 'layout' : layout,
-                'fases': fases})
+                'fases': fases,
+                'alumnos': alumnos})
     else:
         return redirect('Error', comprobacion)
 @csrf_protect
@@ -434,6 +437,16 @@ def Fase1(request, codigo, idFase):
     elif comprobacion == 'Inscrito':
         try:
             with connection.cursor() as cursor:
+                if tipo_usuario == "Alumno":
+                    alumno = Alumno.objects.get(id_usuario_id=usuario.id)
+                    id_alumno = alumno.id
+
+                    cursor.callproc('obtener_actividades_por_alumno', [idFase, id_alumno])
+                    actividades = cursor.fetchall()
+                else:
+                    cursor.callproc('obtener_actividades_por_fase', [idFase])
+                    actividades = cursor.fetchall()
+
                 cursor.callproc('BuscarProyectoByCodigo', [codigo])
                 proyectoDetails = cursor.fetchall()
 
@@ -446,8 +459,9 @@ def Fase1(request, codigo, idFase):
                 cursor.callproc('listaMateriales', [idFase])
                 materiales = cursor.fetchall()
 
-                cursor.callproc('obtener_actividades_por_fase', [idFase])
-                actividades = cursor.fetchall()
+                
+                cursor.callproc('BuscarProyectoAlumnos', [proyectoCodigo])
+                alumnos = cursor.fetchall()
             return render(request, 'pages/FasesCoil/fase1.html', {
                 'enlace_activo': 'tareas',
                 'enlace_activo1': idFase,
@@ -457,7 +471,8 @@ def Fase1(request, codigo, idFase):
                 'layout': layout,
                 'fases': fases,
                 'materiales': materiales,
-                'actividades': actividades
+                'actividades': actividades,
+                'alumnos': alumnos
             })
         except Exception as e:
             return redirect('Error', str(e))
@@ -465,31 +480,41 @@ def Fase1(request, codigo, idFase):
         return redirect('Error', comprobacion)
 @csrf_protect
 @login_required(login_url='Login')
-def ListaAlumnosProfesores (request, codigo): 
+def ListaAlumnosProfesores(request, codigo):
     layout = LlenarLayout(request)
     usuario = request.user
     tipo_usuario = usuario.rol.nombre
-    comprobacion = ComprobarCodigoUsuario(request,codigo)
+    comprobacion = ComprobarCodigoUsuario(request, codigo)
+    
     if comprobacion == 'No inscrito':
         return redirect('EntrarProyecto', codigo)
     elif comprobacion == 'Inscrito':
         with connection.cursor() as cursor:
+            # Obtener detalles del proyecto
             cursor.callproc('BuscarProyectoByCodigo', [codigo])
             proyectoDetails = cursor.fetchall()
+            
+            # Obtener código del proyecto
             cursor.callproc('buscarProyectoPorCodigo', [codigo])
             proyectoCodigo = cursor.fetchone()[0]
+            
+            # Obtener profesores
             cursor.callproc('BuscarProyectoProfesores', [proyectoCodigo])
             profesores = cursor.fetchall()
+            
+            # Obtener alumnos
             cursor.callproc('BuscarProyectoAlumnos', [proyectoCodigo])
             alumnos = cursor.fetchall()
-            return render(request,'pages/Proyectos/ListaAlumnosProfesores.html',{
+            
+            return render(request, 'pages/Proyectos/ListaAlumnosProfesores.html', {
                 'enlace_activo': 'personas',
                 'proyectoDetails': proyectoDetails,
                 'codigo': codigo,
-                'usuario' : usuario,
-                'layout' : layout,
-                'profesores':profesores,
-                'alumnos':alumnos})
+                'usuario': usuario,
+                'layout': layout,
+                'profesores': profesores,
+                'alumnos': alumnos
+            })
     else:
         return redirect('Error', comprobacion)
 @csrf_protect
@@ -515,6 +540,7 @@ def ProyectoDetail(request, codigo):
                 archivos = cursor.fetchall()
                 archivos_dict[anuncio[0]] = archivos
             archivos_list = [(anuncio_id, archivos) for anuncio_id, archivos in archivos_dict.items()]
+
             enlaces_dict = {}
             for anuncio in anuncios:
                 cursor.callproc('verEnlacesAnuncios', [anuncio[0]])
@@ -583,63 +609,96 @@ def ConfiguracionProyecto(request, codigo):
 def SeguimientoActividad(request, codigo):
     layout = LlenarLayout(request)
     usuario = request.user
-    tipo_usuario = usuario.rol.nombre
-    comprobacion = ComprobarCodigoUsuario(request,codigo)
+    comprobacion = ComprobarCodigoUsuario(request, codigo)
+    
     if comprobacion == 'No inscrito':
-        return render('EntrarProyecto', codigo)
+        return redirect('EntrarProyecto', codigo=codigo)
     elif comprobacion == 'Inscrito':
         with connection.cursor() as cursor:
             cursor.callproc('BuscarProyectoByCodigo', [codigo])
             proyectoDetails = cursor.fetchall()
+            
             cursor.callproc('buscarProyectoPorCodigo', [codigo])
             proyectoCodigo = cursor.fetchone()[0]
-            cursor.callproc('ListasFasesByProyecto', [proyectoCodigo])
-            fases = cursor.fetchall()
+            
+            
             cursor.callproc('BuscarProyectoAlumnos', [proyectoCodigo])
             alumnos = cursor.fetchall()
-            return render(request,'pages/Actividades/SeguimientoActividad.html',{
+            
+            return render(request, 'pages/Actividades/SeguimientoActividad.html', {
                 'enlace_activo': 'calificaciones',
                 'proyectoDetails': proyectoDetails,
                 'codigo': codigo,
-                'usuario' : usuario,
-                'layout' : layout,
-                'fases': fases,
-                'alumnos': alumnos})
+                'usuario': usuario,
+                'layout': layout,
+                'alumnos': alumnos
+            })
     else:
-        return redirect('Error', comprobacion)
+        return redirect('Error', mensaje=comprobacion)
+
 @csrf_protect
 @login_required(login_url='Login')
-def ViAlActividades(request, actividad):
+def ViAlActividades(request, actividad_id):
+    layout = LlenarLayout(request)
+    with connection.cursor() as cursor:
+        cursor.callproc('obtener_actividad_por_id', [actividad_id])
+        resultado = cursor.fetchone()  
+        cursor.callproc('verEnlacesActividades', [actividad_id])
+        links = cursor.fetchall()
+
+        cursor.callproc('obtener_comentarios_actividades', [actividad_id])
+        comentarios = cursor.fetchall()
+        if layout[0] == "Profesor":
+            cursor.callproc('obtener_comentarios_actividad_profesor', [actividad_id])
+            comenPriv = cursor.fetchall()
+        elif layout[0] == "Alumno":
+            cursor.callproc('obtener_comentarios_actividad_alumno', [actividad_id, layout[8]])
+            comenPriv = cursor.fetchall()
+    # Obtener los archivos adjuntos relacionados con la actividad
+    archivos = SubirArchivos_Actividades.objects.filter(id_actividad=actividad_id)
+    return render(request, 'pages/Actividades/ViAlActividades.html', {
+        'layout': layout,
+        'actividad': resultado,
+        'archivos': archivos,
+        'mostrar_comentarios': comentarios,
+        'mostrar_links': links,
+        'comenPriv': comenPriv
+
+    })
+
+
+@csrf_protect
+@login_required(login_url='Login')
+def ViAlMateriales(request, material_id):
     layout = LlenarLayout(request)
     
     with connection.cursor() as cursor:
-        cursor.callproc('obtener_actividad_por_id', [actividad])
-        resultado = cursor.fetchone()  # Corregido el nombre de la variable
-
-    return render(request, 'pages/Actividades/ViAlActividades.html', {
-        'layout': layout,
-        'actividad': resultado,  # Corregido el nombre de la variable
-    })
-
-@csrf_protect
-@login_required(login_url='Login')
-def ViAlMateriales(request,material):
-    layout = LlenarLayout(request)
+        cursor.callproc('obtener_material_por_id', [material_id])
+        resultado = cursor.fetchone()
+    
+    # Obtener los archivos adjuntos relacionados con el material
+    archivos = SubirArchivos_Materiales.objects.filter(id_material=material_id)
+    
+    # Obtener comentarios y enlaces relacionados con el material
     with connection.cursor() as cursor:
-        cursor.callproc('obtener_material_por_id', [material])
-        resulatdo = cursor.fetchone()
-
-        cursor.callproc('obtener_comentarios_materiales', [material])
+        cursor.callproc('obtener_comentarios_materiales', [material_id])
         comentarios = cursor.fetchall()
 
-        cursor.callproc('enlacesMateriales', [material])
+        cursor.callproc('enlacesMateriales', [material_id])
         links = cursor.fetchall()
-    return render(request, 'pages/Materiales/ViAlMateriales.html',{
+        if layout[0] == "Profesor":
+            cursor.callproc('obtener_comentarios_material_profesor', [material_id])
+            comenPriv = cursor.fetchall()
+        elif layout[0] == "Alumno":
+            cursor.callproc('obtener_comentarios_material_alumno', [material_id, layout[8]])
+            comenPriv = cursor.fetchall()
+    return render(request, 'pages/Materiales/ViAlMateriales.html', {
         'layout': layout,
-        'material': resulatdo,
+        'material': resultado,
         'mostrar_comentarios': comentarios,
-        'mostrar_links': links
-
+        'mostrar_links': links,
+        'archivos': archivos,
+        'comenPriv': comenPriv
     })
 
 @csrf_protect
@@ -1306,43 +1365,72 @@ def obtener_material_por_id(material_id):
 def AgregarMaterial(request):
     usuario = request.user
     tipo_usuario = usuario.rol.nombre
-    tema = request.POST.get('Tema')
-    descripcion = request.POST.get('descripcion')
-    titulos = request.POST.getlist('linkname')
-    paths = request.POST.getlist('link')
-    fases = request.POST.get('fase_publicacion_material')
-    fecha = datetime.now().date()
-    combinados = zip(titulos, paths)
-    try:
-        if tipo_usuario == "Alumno":
-            return redirect('Error', 'Error al intentar')
-        elif tipo_usuario == "Profesor":
-            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
-            id_profesor = profesor.id
-            with connection.cursor() as cursor:
-                cursor.callproc('insertarMaterial', [
-                    str(tema),
-                    str(descripcion),
-                    fecha,
-                    int(fases),
-                    id_profesor
-                ])
-                resultado = cursor.fetchone()[0]
-                if resultado != 'Error no se publico el anuncio' :
-                    if titulos:
-                        for titulo, path in combinados:
-                            cursor.callproc('EnlacesMaterial', [
-                                str(titulo),
-                                str(path),
-                                resultado
-                    ])
-                    return redirect('ViAlMateriales', resultado)
-            return redirect('Error', 'Error al intentar')
-        else:
-            return redirect('Error', resultado)
-    except Exception as e:
-                return redirect('Error', str(e))    
+    if request.method == 'POST':
+        tema = request.POST.get('Tema')
+        descripcion = request.POST.get('descripcion')
+        titulos = request.POST.getlist('linkname')
+        paths = request.POST.getlist('link')
+        fases = request.POST.get('fase_publicacion_material')
+        fecha = datetime.now().date()
+        combinados = zip(titulos, paths)
 
+        if tipo_usuario == "Alumno":
+            messages.error(request, "Error: Los alumnos no pueden agregar material.")
+            return redirect('Error', 'Error al intentar')
+
+        try:
+            if tipo_usuario == "Profesor":
+                profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+                id_profesor = profesor.id
+
+                with transaction.atomic():
+                    with connection.cursor() as cursor:
+                        cursor.callproc('insertarMaterial', [
+                            str(tema),
+                            str(descripcion),
+                            fecha,
+                            int(fases),
+                            id_profesor
+                        ])
+                        resultado = cursor.fetchone()[0]
+
+                        if resultado != 'Error no se publico el anuncio':
+                            if titulos:
+                                for titulo, path in combinados:
+                                    cursor.callproc('EnlacesMaterial', [
+                                        str(titulo),
+                                        str(path),
+                                        resultado
+                                    ])
+
+                            # Procesar archivos subidos
+                            if 'files' in request.FILES:
+                                files = request.FILES.getlist('files')
+                                for uploaded_file in files:
+                                    archivo = SubirArchivos_Materiales(
+                                        path=uploaded_file,
+                                        fecha=datetime.now().date(),
+                                        id_material_id=resultado
+                                    )
+                                    archivo.save()
+
+                            messages.success(request, "Material agregado correctamente.")
+                            return redirect('ViAlMateriales', material_id=resultado)
+                        else:
+                            messages.error(request, "Error: No se pudo publicar el anuncio.")
+                            return redirect('Error', 'Error al intentar')
+            else:
+                messages.error(request, "Error: Tipo de usuario no permitido.")
+                return redirect('Error', 'Error desconocido')
+        except Profesor.DoesNotExist:
+            messages.error(request, "Error: Profesor no encontrado.")
+            return redirect('Error', 'Error al intentar')
+        except Exception as e:
+            messages.error(request, f"Error: {str(e)}")
+            return redirect('Error', str(e))
+
+    return render(request, 'pages/Materiales/AgregarMaterial.html')
+######################################################################
 #COMENTARIOS
 @csrf_protect
 @login_required(login_url='Login')
@@ -1383,6 +1471,7 @@ def MaterialComentarios(request, id_material):
             return redirect('Error', 'Datos no válidos')
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
+    
 @csrf_protect    
 @login_required(login_url='Login')
 def eliminarAnuncio(request,id_anuncio, codigo):
@@ -1423,36 +1512,151 @@ def eliminarAnuncio(request,id_anuncio, codigo):
 def AgregarActividad(request):
     usuario = request.user
     tipo_usuario = usuario.rol.nombre
-    titulo = request.POST.get('titulo')
-    descripcion = request.POST.get('descripcion')
-    titulos = request.POST.getlist('linkname')
-    paths = request.POST.getlist('link')
-    fases = request.POST.get('fase_publicacion_actividad')
-    fecha = datetime.now().date()
-    combinados = zip(titulos, paths)
-    try:
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        descripcion = request.POST.get('descripcion')
+        fase_id = request.POST.get('fase_publicacion_actividad')
+        titulos = request.POST.getlist('linkname')
+        paths = request.POST.getlist('link')
+        fecha = datetime.now().date()
+        combinados = zip(titulos, paths)
+        alumnos = request.POST.getlist('alumnos')
+
         if tipo_usuario == "Alumno":
             return redirect('Error', 'Error al intentar')
         elif tipo_usuario == "Profesor":
             profesor = Profesor.objects.get(id_usuario_id=usuario.id)
             id_profesor = profesor.id
+            try:
+                with transaction.atomic():
+                    with connection.cursor() as cursor:
+                        cursor.callproc('insertarActividad', [
+                            str(titulo),
+                            str(descripcion),
+                            fecha,
+                            int(fase_id),
+                            id_profesor
+                        ])
+                        resultado = cursor.fetchone()[0]  # ID de la actividad creada
+
+                        # Insertar enlaces si existen
+                        if titulos:
+                            for titulo, path in combinados:
+                                cursor.callproc('Actividades_enlaces', [
+                                    str(titulo),
+                                    str(path),
+                                    resultado
+                                ])
+
+                        # Procesar archivos subidos
+                        if 'files' in request.FILES:
+                            files = request.FILES.getlist('files')
+                            for uploaded_file in files:
+                                archivo = SubirArchivos_Actividades(
+                                    path=uploaded_file,
+                                    fecha=datetime.now().date(),
+                                    id_actividad_id=resultado
+                                )
+                                archivo.save()
+                        
+                        #*Asignar actividades
+                        for alumno in alumnos:
+                            cursor.callproc('asignarActividad', [alumno, resultado])
+
+                        
+                    return redirect('ViAlActividades', resultado)
+            except Profesor.DoesNotExist:
+                return redirect('Error', 'Profesor no encontrado')
+            except Exception as e:
+                return redirect('Error', str(e))
+        else:
+            return redirect('Error', 'Error desconocido')
+
+    return render(request, 'pages/Actividades/AgregarActividad.html')
+##############################################################
+
+#COMENTARIOS
+@csrf_protect
+@login_required(login_url='Login')
+def ActividadComentarios(request, id_actividad):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    comentario = request.POST.get('comentar')
+    try:
+        if tipo_usuario == "Alumno":
+            alumno = Alumno.objects.get(id_usuario_id=usuario.id)
+            id_alumno = alumno.id
             with connection.cursor() as cursor:
-                cursor.callproc('insertarActividad', [
-                    str(titulo),
-                    str(descripcion),
-                    fecha,
-                    int(fases),
-                    id_profesor
+                cursor.callproc('Actividad_Comentario_Alumno', [
+                    str(comentario),
+                    id_alumno,
+                    id_actividad
                 ])
                 resultado = cursor.fetchone()[0]
-                
-                return redirect('ViAlActividades', resultado)
-            return redirect('Error', 'Error al intentar')
+            if resultado == 'Agregado exitosamente':
+                return redirect('ViAlActividades', id_actividad)
+            else:
+                return redirect('Error', resultado)
+        elif tipo_usuario == "Profesor":
+            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+            id_profesor = profesor.id
+            with connection.cursor() as cursor:
+                cursor.callproc('Actividad_Comentario', [
+                    str(comentario),
+                    id_profesor,
+                    id_actividad
+                ])
+                resultado = cursor.fetchone()[0]
+            if resultado == 'Agregado exitosamente':
+                return redirect('ViAlActividades', id_actividad)
+            else:
+                return redirect('Error', resultado)
         else:
-            return redirect('Error', resultado)
-    except Exception as e:
-                return redirect('Error', str(e))
+            return redirect('Error', 'Datos no válidos')
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
 
+##############################################################
+#!Comentarios priv ACTIVIDAD
+@login_required(login_url='Login')
+def comentarioPrivActividad(request, id_actividad, id_alumno):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    comentario = request.POST.get('comentPriv')
+
+    if not comentario:
+        return redirect('Error', 'El comentario no puede estar vacío.')
+
+    try:
+        if tipo_usuario == 'Alumno':
+            alumno = Alumno.objects.get(id_usuario_id=usuario.id)
+            id_alumno_log = alumno.id
+            procedimiento = 'ComentarActividadPrivAlumno'
+            parametros = [str(comentario), id_actividad,id_alumno_log]
+        elif tipo_usuario == 'Profesor':
+            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+            id_profesor = profesor.id
+            procedimiento = 'ComentarActividadPrivProfesor'
+            parametros = [str(comentario), id_profesor, id_actividad, id_alumno]
+        else:
+            return redirect('Error', 'Tipo de usuario no válido.')
+
+        with connection.cursor() as cursor:
+            cursor.callproc(procedimiento, parametros)
+            resultado = cursor.fetchone()[0]
+
+            if resultado == 'Agregado exitosamente':
+                return redirect('ViAlActividades', id_actividad)
+            else:
+                return redirect('Error', resultado)
+
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
+
+    except Exception as e:
+        return redirect('Error', str(e))
+
+##############################################################
 @login_required(login_url='Login')
 def invitarProyecto(request, codigo):
     correos = request.POST.getlist('correos')
@@ -1476,7 +1680,7 @@ def invitarProyecto(request, codigo):
                         #Correo
                         mensaje_invitacion = (
                         f'Hola, {correoYUsuario[1]}.\n\n'
-                        f'El profesor {nombre}, te invito a unirte al Proyecto COIL {proyectoDetails[1]}\n'
+                        f'El profesor(a) {nombre}, te invitó a unirte al Proyecto COIL {proyectoDetails[1]}\n'
                         f'Puedes acceder al proyecto utilizando el siguiente enlace: {url_proyecto}\n'
                         f'Tambien puede utilizar el codigo: {codigo}.'
                         )
@@ -1719,5 +1923,142 @@ def editarPostVista(request,id_anuncio, codigo):
                     })
                 else:
                     return redirect('Error', 'Tu usuario no coincide con el comentario')
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
+    
+#!Comentarios priv
+@login_required(login_url='Login')
+def comentarioPrivMaterial(request, id_material, id_alumno):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    comentario = request.POST.get('comentPriv')
+
+    if not comentario:
+        return redirect('Error', 'El comentario no puede estar vacío.')
+
+    try:
+        if tipo_usuario == 'Alumno':
+            alumno = Alumno.objects.get(id_usuario_id=usuario.id)
+            id_alumno_log = alumno.id
+            procedimiento = 'ComentarMaterialPrivAlumno'
+            parametros = [str(comentario), id_alumno_log, id_material]
+        elif tipo_usuario == 'Profesor':
+            profesor = Profesor.objects.get(id_usuario_id=usuario.id)
+            id_profesor = profesor.id
+            procedimiento = 'ComentarMaterialPrivProfesor'
+            parametros = [str(comentario), id_profesor, id_material, id_alumno]
+        else:
+            return redirect('Error', 'Tipo de usuario no válido.')
+
+        with connection.cursor() as cursor:
+            cursor.callproc(procedimiento, parametros)
+            resultado = cursor.fetchone()[0]
+
+            if resultado == 'Agregado exitosamente':
+                return redirect('ViAlMateriales', id_material)
+            else:
+                return redirect('Error', resultado)
+
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
+
+    except Exception as e:
+        return redirect('Error', str(e))
+
+@login_required(login_url='Login')
+def subirActividad(request, id_actividad_parm):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    if tipo_usuario == 'Alumno':
+        alumno = Alumno.objects.get(id_usuario_id=usuario.id)
+        id_alumno_log = alumno.id
+        if 'files' in request.FILES:
+            files = request.FILES.getlist('files')
+            for uploaded_file in files:
+                # Guardar cada archivo en el modelo
+                entregas_actividades = Entregas_Actividades(
+                    path=uploaded_file,
+                    fecha=datetime.now().date(),
+                    id_actividad_id=id_actividad_parm,
+                    id_alumno_id = id_alumno_log
+                )
+                entregas_actividades.save()
+            with connection.cursor() as cursor:
+                cursor.callproc('entregarActividad', [id_alumno_log, id_actividad_parm])
+    return redirect('ViAlActividades', id_actividad_parm)
+
+###########################}
+#SEGUMINETO DE LAS ACTIVIDADES DEL ALUMNO
+@csrf_protect
+@login_required(login_url='Login')
+def SeguimientoAct(request,codigo,id_alumno):
+    layout = LlenarLayout(request)
+    comprobacion = ComprobarCodigoUsuario(request,codigo)
+    alumno = Alumno.objects.filter(id=id_alumno).values('nombre', 'apellidos').first()
+    if comprobacion == 'No inscrito':
+        return redirect('EntrarProyecto', codigo)
+    elif comprobacion == 'Inscrito':
+
+        with connection.cursor() as cursor:
+            cursor.callproc('BuscarProyectoByCodigo', [codigo])
+            proyectoDetails = cursor.fetchall()
+
+            cursor.callproc('buscarProyectoPorCodigo', [codigo])
+            proyectoCodigo = cursor.fetchone()[0]
+            cursor.callproc('ListasFasesByProyecto', [proyectoCodigo])
+            fases = cursor.fetchall()
+
+            cursor.callproc('obtener_actividades_by_alumno', [id_alumno])
+            actividades = cursor.fetchall()
+
+            cursor.callproc('obtener_entregas_by_alumno', [id_alumno])
+            entregas = cursor.fetchall()
+
+        return render(request, 'pages/Actividades/Seguimiento_Act.html', {
+            'codigo': codigo,
+            'layout': layout,
+            'proyectoDetails': proyectoDetails,
+            'fases': fases,
+            'actividades': actividades,
+            'alumno': alumno,
+            'entregas': entregas,
+            'id_alumno': id_alumno
+        })
+    else:
+        return redirect('Error', comprobacion)
+    
+@login_required(login_url='Login')
+def calificarActividad(request, id_entrega, id_alumno, codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    try:
+        if tipo_usuario == 'Alumno':
+            return redirect('Error', 'No tienes permisos parar realizar esto')
+        elif tipo_usuario == 'Profesor':
+            with connection.cursor() as cursor:
+                cursor.callproc('calificarActividad', [id_entrega])
+                resultado = cursor.fetchone()[0]
+                if resultado == 'Calificada con exito':
+                    return redirect('SeguimientoAct', codigo, id_alumno)
+                else:
+                    return redirect('Error', resultado)
+    except (Alumno.DoesNotExist, Profesor.DoesNotExist):
+        return redirect('logout')
+    
+@login_required(login_url='Login')
+def anularCalificacionActividad(request, id_entrega, id_alumno, codigo):
+    usuario = request.user
+    tipo_usuario = usuario.rol.nombre
+    try:
+        if tipo_usuario == 'Alumno':
+            return redirect('Error', 'No tienes permisos parar realizar esto')
+        elif tipo_usuario == 'Profesor':
+            with connection.cursor() as cursor:
+                cursor.callproc('descalificarActividad', [id_entrega])
+                resultado = cursor.fetchone()[0]
+                if resultado == 'Anulada con exito':
+                    return redirect('SeguimientoAct', codigo, id_alumno)
+                else:
+                    return redirect('Error', resultado)
     except (Alumno.DoesNotExist, Profesor.DoesNotExist):
         return redirect('logout')
