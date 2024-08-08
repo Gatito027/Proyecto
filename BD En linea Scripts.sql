@@ -1,5 +1,4 @@
 -- Buscar proyectos impartidas y no archivadas (listaProyectos)
-drop function BuscarProyectoImpartido(profesorid int);
 Create or replace Function BuscarProyectoImpartido(profesorid int) returns TABLE (
     id INT,
     nombre VARCHAR,
@@ -1205,3 +1204,442 @@ delete from public.plataforma_alumno;
 
 delete from public.plataforma_profesor;
 delete from public.plataforma_usuario;
+
+
+
+--enlaces actividad
+
+Create or replace Function verEnlacesActividades(
+	id_actividad_parm int
+) returns table(
+	id INT8,
+    titulo TEXT,
+    path TEXT,
+    fecha date,
+    anuncio_id int8,
+    dominio text
+)
+as
+$$
+BEGIN
+	RETURN QUERY
+	select enlaces.id, enlaces.titulo, enlaces.path, enlaces.fecha, enlaces.id_anuncio_id, substring(enlaces.path from 'https?://([^/]+)') as dominio 
+	from public.plataforma_actividades_enlaces as enlaces
+	where enlaces.id_anuncio_id = id_actividad_parm;
+END;
+$$
+LANGUAGE plpgsql;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--Comentarios priv
+
+--comentar Material priv Profesor
+Create or replace Function ComentarMaterialPrivProfesor(
+	comentario_parm text,
+	id_profesor_parm int,
+	id_Material_parm int,
+	id_alumno_parm int
+) returns varchar
+as
+$$
+BEGIN
+	INSERT INTO public.plataforma_materiales_comentarios_priv
+	( comentario, fecha, fecha_edit, id_alumno_id, id_material_id, id_profesor_id)
+	VALUES(comentario_parm, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, id_alumno_parm, id_Material_parm, id_profesor_parm);
+	RETURN 'Agregado exitosamente';
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 'Error no se comento el material';
+END;
+$$
+LANGUAGE plpgsql;
+
+--Comentario Anuncio Alumno
+Create or replace Function ComentarMaterialPrivAlumno(
+	comentario_parm text,
+	id_alumno_parm int,
+	id_material_parm int
+) returns varchar
+as
+$$
+BEGIN
+	INSERT INTO public.plataforma_materiales_comentarios_priv
+	( comentario, fecha, fecha_edit, id_alumno_id, id_material_id, id_profesor_id)
+	VALUES(comentario_parm, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, id_alumno_parm, id_Material_parm, NULL);
+	RETURN 'Agregado exitosamente';
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 'Error no se comento el anuncio';
+END;
+$$
+LANGUAGE plpgsql;
+
+-- ver comentarios de un material
+CREATE OR REPLACE FUNCTION obtener_comentarios_material_profesor(id_material_parm BIGINT)
+RETURNS TABLE (
+    id INT8,
+    comentario TEXT,
+    fecha timestamptz,
+    fecha_edit timestamptz,
+    nombre varchar,
+    apellidos varchar,
+    id_material_id int8,
+    id_alumno_id INT8,
+    id_profesor_id INT8
+) AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT comentario.id, comentario.comentario, comentario.fecha, comentario.fecha_edit, comentarioalumno.nombre, comentarioalumno.apellidos, comentario.id_material_id, comentario.id_alumno_id , comentario.id_profesor_id 
+    FROM plataforma_materiales_comentarios_priv AS comentario
+    INNER JOIN public.plataforma_alumno AS comentarioalumno ON comentario.id_alumno_id = comentarioalumno.id
+    WHERE comentario.id_material_id = id_material_parm and comentario.id_profesor_id is NULL
+    UNION ALL
+    SELECT comentario.id, comentario.comentario, comentario.fecha, comentario.fecha_edit, comentarioprofesor.nombre, comentarioprofesor.apellidos, comentario.id_material_id, comentario.id_alumno_id , comentario.id_profesor_id 
+    FROM plataforma_materiales_comentarios_priv AS comentario
+    INNER JOIN public.plataforma_profesor AS comentarioprofesor ON comentario.id_profesor_id = comentarioprofesor.id 
+    WHERE comentario.id_material_id = id_material_parm
+    ORDER BY fecha asc ;   -- Ordenar por fecha_edit ascendente
+END;
+$$ LANGUAGE plpgsql;
+
+-- ver comentarios de un material alumno
+CREATE OR REPLACE FUNCTION obtener_comentarios_material_alumno(id_material_parm BIGINT, id_alumno_parm int)
+RETURNS TABLE (
+    id INT8,
+    comentario TEXT,
+    fecha timestamptz,
+    fecha_edit timestamptz,
+    nombre varchar,
+    apellidos varchar,
+    id_material_id int8,
+    id_alumno_id INT8,
+    id_profesor_id INT8
+) AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT comentario.id, comentario.comentario, comentario.fecha, comentario.fecha_edit, comentarioalumno.nombre, comentarioalumno.apellidos, comentario.id_material_id, comentario.id_alumno_id , comentario.id_profesor_id 
+    FROM plataforma_materiales_comentarios_priv AS comentario
+    INNER JOIN public.plataforma_alumno AS comentarioalumno ON comentario.id_alumno_id = comentarioalumno.id
+    WHERE comentario.id_material_id = id_material_parm and comentario.id_alumno_id = id_alumno_parm  and comentario.id_profesor_id is null
+    UNION ALL
+    SELECT comentario.id, comentario.comentario, comentario.fecha, comentario.fecha_edit, comentarioprofesor.nombre, comentarioprofesor.apellidos, comentario.id_material_id, comentario.id_alumno_id , comentario.id_profesor_id 
+    FROM plataforma_materiales_comentarios_priv AS comentario
+    INNER JOIN public.plataforma_profesor AS comentarioprofesor ON comentario.id_profesor_id = comentarioprofesor.id 
+    WHERE comentario.id_material_id = id_material_parm and comentario.id_alumno_id = id_alumno_parm 
+    ORDER BY fecha asc ;   -- Ordenar por fecha_edit ascendente
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+--FUNCION PUBLICAR UN COMENTARIO EN ACTIVIDADES
+--comentar Anuncio Profesor
+Create or replace Function Actividad_Comentario(
+	comentario_parm text,
+	id_profesor_parm int,
+	id_anuncio_parm int
+) returns varchar
+as
+$$
+BEGIN
+	INSERT INTO public.plataforma_actividades_comentarios
+	(comentario, fecha, fecha_edit, id_alumno_id, id_profesor_id, id_actividad_id)
+	VALUES(comentario_parm, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, id_profesor_parm, id_anuncio_parm);
+	RETURN 'Agregado exitosamente';
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 'Error no se comento el anuncio';
+END;
+$$
+LANGUAGE plpgsql;
+
+
+SELECT Actividad_Comentario('Este es un comentario de actividad',4,48);
+
+----------------------------------------------------------------------
+--Comentario Materiales Alumno
+Create or replace Function Actividad_Comentario_Alumno(
+	comentario_parm text,
+	id_alumno_parm int,
+	id_anuncio_parm int
+) returns varchar
+as
+$$
+BEGIN
+	INSERT INTO public.plataforma_actividades_comentarios
+	(comentario, fecha, fecha_edit, id_alumno_id, id_profesor_id, id_material_id)
+	VALUES(comentario_parm, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, id_alumno_parm, NULL, id_anuncio_parm);
+	RETURN 'Agregado exitosamente';
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 'Error no se comento el anuncio'|| SQLERRM;
+END;
+$$
+LANGUAGE plpgsql;
+
+SELECT Actividad_Comentario_Alumno('Este es un comentario de actividad de alumno',2,49);
+------------------------------------------------------------------------------------------------------
+
+
+CREATE OR REPLACE FUNCTION obtener_comentarios_actividades(id_anuncio_parm BIGINT)
+RETURNS TABLE (
+    id INT8,
+    comentario TEXT,
+    fecha timestamptz,
+    fecha_edit timestamptz,
+    nombre varchar,
+    apellidos varchar,
+    id_alumno_id INT8,
+    id_profesor_id INT8
+) AS $$
+BEGIN
+    RETURN QUERY 
+    select comentariospublicados.id, comentariospublicados.comentario, comentariospublicados.fecha, comentariospublicados.fecha_edit, profesor.nombre, profesor.apellidos,comentariospublicados.id_alumno_id, profesor.id
+	from public.plataforma_actividades_comentarios as comentariosPublicados
+	inner join public.plataforma_profesor as profesor on comentariospublicados.id_profesor_id = profesor.id
+	where comentariospublicados.id_material_id = id_anuncio_parm
+	union all
+	select comentariospublicados.id, comentariospublicados.comentario, comentariospublicados.fecha, comentariospublicados.fecha_edit, alumno.nombre, alumno.apellidos, alumno.id, comentariospublicados.id_profesor_id
+	from public.plataforma_actividades_comentarios as comentariosPublicados
+	inner join public.plataforma_alumno as alumno on comentariospublicados.id_alumno_id = alumno.id
+	where comentariospublicados.id_material_id = id_anuncio_parm
+	ORDER BY fecha_edit desc ;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION obtener_comentarios_actividades(id_anuncio_parm BIGINT)
+RETURNS TABLE (
+    id INT8,
+    comentario TEXT,
+    fecha timestamptz,
+    fecha_edit timestamptz,
+    nombre varchar,
+    apellidos varchar,
+    id_alumno_id INT8,
+    id_profesor_id INT8
+) AS $$
+BEGIN
+    RETURN QUERY 
+    select comentariospublicados.id, comentariospublicados.comentario, comentariospublicados.fecha, comentariospublicados.fecha_edit, profesor.nombre, profesor.apellidos,comentariospublicados.id_alumno_id, profesor.id
+	from public.plataforma_actividades_comentarios as comentariosPublicados
+	inner join public.plataforma_profesor as profesor on comentariospublicados.id_profesor_id = profesor.id
+	where comentariospublicados.id_actividad_id = id_anuncio_parm
+	union all
+	select comentariospublicados.id, comentariospublicados.comentario, comentariospublicados.fecha, comentariospublicados.fecha_edit, alumno.nombre, alumno.apellidos, alumno.id, comentariospublicados.id_profesor_id
+	from public.plataforma_actividades_comentarios as comentariosPublicados
+	inner join public.plataforma_alumno as alumno on comentariospublicados.id_alumno_id = alumno.id
+	where comentariospublicados.id_actividad_id = id_anuncio_parm
+	ORDER BY fecha_edit desc ;
+END;
+$$ LANGUAGE plpgsql;
+
+-------------------------------------------------------------------------------------------------
+-- Calificacar tarea
+------------------------------------------------------------------------------------------------
+-- Entregar actividad
+Create or replace Function entregarActividad(
+	id_alumno_parm int,
+	id_actividad_parm int
+) returns varchar
+as
+$$
+BEGIN
+UPDATE public.plataforma_asignar_actividad
+	SET entregada=true
+	WHERE id_alumno_id= id_alumno_parm and id_actividad_id= id_actividad_parm;
+	RETURN 'Entregada con exito';
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 'Error no se entrego';
+END;
+$$
+LANGUAGE plpgsql;
+
+-- Anular entrega
+Create or replace Function anularEntrega(
+	id_alumno_parm int,
+	id_actividad_parm int
+) returns varchar
+as
+$$
+BEGIN
+UPDATE public.plataforma_asignar_actividad
+	SET entregada=false
+	WHERE id_alumno_id= id_alumno_parm and id_actividad_id= id_actividad_parm;
+	RETURN 'Anulada con exito';
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 'Error no se anulo';
+END;
+$$
+LANGUAGE plpgsql;
+
+--asignar actividad
+Create or replace Function asignarActividad(
+	id_alumno_parm int,
+	id_actividad_parm int
+) returns varchar
+as
+$$
+BEGIN
+	INSERT INTO public.plataforma_asignar_actividad
+	(calificacion, entregada, id_actividad_id, id_alumno_id)
+	VALUES(null, false, id_actividad_parm, id_alumno_parm);
+	RETURN 'Asignada con exito';
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 'Error no se asigno';
+END;
+$$
+LANGUAGE plpgsql;
+
+
+
+
+
+
+
+--actividades de un alumno espesifico
+
+CREATE OR REPLACE FUNCTION public.obtener_actividades_por_alumno(fase_id integer, id_alumno_parm int)
+ RETURNS TABLE(id bigint, titulo character varying, descripcion text, fecha date, id_fase bigint, id_profesor integer)
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+    RETURN QUERY
+    select act.id, act.titulo, act.descripcion, act.fecha, act.id_fase, act.id_profesor from public.plataforma_asignar_actividad as asig
+	inner join public.plataforma_actividades as act
+	on asig.id_actividad_id = act.id 
+	where act.id_fase =fase_id and asig.id_alumno_id = id_alumno_parm;
+END;
+$function$
+;
+
+--nombres actividades
+
+select act.id, act.titulo, act.descripcion, act.fecha , act.id_fase, act.id_profesor from public.plataforma_asignar_actividad as asig
+inner join public.plataforma_actividades as act
+on asig.id_actividad_id = act.id 
+where act.id_fase =26 and asig.id_alumno_id = 6;
+
+
+
+
+select a.nombre, a.apellidos from plataforma_alumno as a
+where a.id = 2;
+
+
+CREATE OR REPLACE FUNCTION public.obtener_actividades_by_alumno(id_alumno_parm int)
+ RETURNS TABLE(
+ id bigint, 
+ calificacion boolean, 
+ entregada boolean, 
+ id_actividad bigint, 
+ id_alumno int8,
+ titulo varchar,
+ id_fase int8
+ )
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+    RETURN QUERY
+	select paa.id, paa.calificacion, paa.entregada, paa.id_actividad_id, paa.id_alumno_id, pa.titulo, pa.id_fase from public.plataforma_asignar_actividad as paa
+	inner join plataforma_actividades as pa 
+	on paa.id_actividad_id = pa.id 
+	where paa.id_alumno_id = id_alumno_parm;
+END;
+$function$
+;
+ drop function obtener_actividades_by_alumno(int);
+select obtener_actividades_by_alumno(2);
+
+
+
+
+
+select obtener_entregas_by_alumno (6)
+CREATE OR REPLACE FUNCTION public.obtener_entregas_by_alumno(id_alumno_parm int)
+ RETURNS TABLE(
+ id bigint, 
+ path varchar, 
+ fecha date, 
+ id_actividad bigint, 
+ id_alumno int8
+ )
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+	RETURN QUERY
+	select * from public.plataforma_entregas_actividades as pea
+	where pea.id_alumno_id = id_alumno_parm;
+END;
+$function$
+;
+
+Create or replace Function calificarActividad(
+	id_parm int
+) returns varchar
+as
+$$
+BEGIN
+	UPDATE public.plataforma_asignar_actividad
+	SET calificacion=true
+	WHERE id=id_parm;
+	RETURN 'Calificada con exito';
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 'Error no se califico';
+END;
+$$
+LANGUAGE plpgsql;
+
+
+Create or replace Function descalificarActividad(
+	id_parm int
+) returns varchar
+as
+$$
+BEGIN
+	UPDATE public.plataforma_asignar_actividad
+	SET calificacion=false
+	WHERE id=id_parm;
+	RETURN 'Anulada con exito';
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 'Error no se anulo la calificacion';
+END;
+$$
+LANGUAGE plpgsql;
+
+
+select descalificarActividad(1)
